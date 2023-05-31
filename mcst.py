@@ -35,11 +35,9 @@ class MCST:
 
         for node_set in self.sets:
             if node_u.get_label() in node_set and node_v.get_label() in node_set:
-                print('CYCLE')
                 return True
         
         node_u_set, node_v_set = self.find_sets(node_u.get_label(), node_v.get_label())
-        print(f'Joining sets - {node_u_set}, {node_v_set}')
         self.join_sets(node_u_set, node_v_set)
     
     def find_sets(self, node_u_label, node_v_label):
@@ -61,6 +59,15 @@ class MCST:
                 self.sets.remove(node_set)
         
         self.sets.append(combined_set)
-        print(f'Joined sets! Sets = {self.sets}')
             
+    def share_cost_of_edge(self, edge):
+        pass
 
+    def getEdges(self):
+        return self.edges
+    
+    def setSets(self, new_set):
+        self.sets = new_set
+    
+    def getSets(self):
+        return self.sets
