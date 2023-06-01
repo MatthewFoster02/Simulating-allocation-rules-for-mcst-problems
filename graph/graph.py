@@ -51,6 +51,28 @@ class Graph:
                 edges.append(Edge(start_node=nodes[i], end_node=nodes[j], cost=random.randint(1, 20)))
         return edges
     
+    def check_path_between_2_nodes(self, node_u_label, node_v_label):
+        visited = set()
+        return self.depthFirstSearch(node_u_label, node_v_label, visited)
+    
+    def depthFirstSearch(self, current_node, end_node, visited:set):
+        print(current_node, end_node)
+        if current_node == end_node:
+            return True
+        
+        visited.add(current_node)
+
+        for edge in self.edges:
+            # Complicated way of checking whether an edge has an endpoint which is the current node and the other end point has not yet been visited
+            if edge.start_node.get_label() == current_node and edge.end_node.get_label() not in visited:
+                if self.depthFirstSearch(edge.end_node.get_label(), end_node, visited):
+                    return True
+            if edge.end_node.get_label() == current_node and edge.start_node.get_label() not in visited:
+                if self.depthFirstSearch(edge.start_node.get_label(), end_node, visited):
+                    return True
+        
+        return False
+    
     def to_string(self):
         return_string = ''
         for edge in self.edges:

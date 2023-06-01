@@ -134,3 +134,25 @@ def test_join_sets_same_set(graph:MCST):
     graph.join_sets(node_u_set, node_v_set)
     updatedStates = graph.getSets()
     assert updatedStates == [{'a'}, {'b'}, {3}, {1, 2}]
+
+def test_share_cost_evenly_one_player(graph:MCST):
+    cost = 3
+    component_sharing = {1}
+    graph.share_evenly(component_sharing, cost)
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [3, 0, 0]
+
+def test_share_cost_evenly_multiple_players(graph:MCST):
+    cost = 4.5
+    component_sharing = {1, 2, 3}
+    graph.share_evenly(component_sharing, cost)
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [1.5, 1.5, 1.5]
+
+def test_share_proportionately(graph:MCST):
+    cost = 5
+    component_sharing1 = {1, 2}
+    component_sharing2 = {3}
+    graph.share_proportionately(component_sharing1, component_sharing2, cost)
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [1.25, 1.25, 2.5]
