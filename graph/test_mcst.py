@@ -156,3 +156,27 @@ def test_share_proportionately(graph:MCST):
     graph.share_proportionately(component_sharing1, component_sharing2, cost)
     cost_allocation = graph.getCostAllocation()
     assert cost_allocation == [1.25, 1.25, 2.5]
+
+def test_check_disconnted_one(graph:MCST, mcstEdges:list[Edge]):
+    graph.setEdges(mcstEdges)
+    graph.setSourceASet({3})
+    graph.setSourceBSet({1, 2})
+    graph.remove_check_disconnected(graph.getEdges()[-1], 5)
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [0, 0, 5]
+
+def test_check_disconnted_multiple(graph:MCST, mcstEdges:list[Edge]):
+    graph.setEdges(mcstEdges)
+    graph.setSourceASet({2, 3})
+    graph.setSourceBSet({1})
+    graph.remove_check_disconnected(graph.getEdges()[-1], 5)
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [0, 2.5, 2.5]
+
+def test_check_disconnted_none(graph:MCST, mcstEdges:list[Edge]):
+    graph.setEdges(mcstEdges)
+    graph.setSourceASet(set())
+    graph.setSourceBSet({1, 2, 3})
+    graph.remove_check_disconnected(graph.getEdges()[-1], 5)
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [0, 0, 0]

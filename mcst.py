@@ -5,17 +5,17 @@ class MCST:
     def __init__(self, graph:Graph, source_a_set:set = None, source_b_set:set = None):
         self.edges = graph.get_edges()
         self.sort_edges_by_cost()
-        sources = graph.get_sources()
-        players = graph.get_players()
+        self.sources = graph.get_sources()
+        self.players = graph.get_players()
         self.sets = []
-        for source in sources:
+        for source in self.sources:
             self.sets.append({source.get_label()})
-        for player in players:
+        for player in self.players:
             self.sets.append({player.get_label()})
         
         self.source_a_set = source_a_set
         self.source_b_set = source_b_set
-        self.cost_allocation = [0] * len(players)
+        self.cost_allocation = [0] * len(self.players)
 
     # TESTED
     def sort_edges_by_cost(self):
@@ -74,8 +74,27 @@ class MCST:
     def share_cost_of_edge(self, edge):
         pass
 
-    def remove_check_disconnected(self, edge):
-        pass
+    def remove_check_disconnected(self, edge:Edge, cost:float):
+        new_graph = Graph(self.edges)
+        edges_new_graph = new_graph.get_edges()
+        edges_new_graph.remove(edge)
+        new_graph.set_edges(edges_new_graph)
+
+        disconnected_players = []
+        for player in self.players:
+            source_label = ''
+            if player.get_label() in self.source_a_set:
+                source_label = 'a'
+            else:
+                source_label = 'b'
+            if not new_graph.check_path_between_2_nodes(player.get_label(), source_label):
+                disconnected_players.append(player.get_label())
+        
+        if len(disconnected_players) == 0:
+            return
+        cost_split = cost/len(disconnected_players)
+        for player in disconnected_players:
+            self.cost_allocation[player-1] += cost_split
 
     # TESTED
     def share_proportionately(self, first_component:set, second_component:set, cost_to_share:float):
@@ -95,6 +114,21 @@ class MCST:
     # BOILERPLATE
     def getEdges(self):
         return self.edges
+    
+    def setEdges(self, edges):
+        self.edges = edges
+    
+    def getSourceASet(self):
+        return self.source_a_set
+    
+    def setSourceASet(self, source_a_set):
+        self.source_a_set = source_a_set
+    
+    def getSourceBSet(self):
+        return self.source_b_set
+    
+    def setSourceBSet(self, source_b_set):
+        self.source_b_set = source_b_set
     
     def setSets(self, new_set):
         self.sets = new_set

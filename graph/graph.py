@@ -56,7 +56,6 @@ class Graph:
         return self.depthFirstSearch(node_u_label, node_v_label, visited)
     
     def depthFirstSearch(self, current_node, end_node, visited:set):
-        print(current_node, end_node)
         if current_node == end_node:
             return True
         
