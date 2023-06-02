@@ -2,7 +2,7 @@ from graph.graph import Graph
 from graph.edge import Edge
 
 class MCST:
-    def __init__(self, graph:Graph, source_a_set:set = None, source_b_set:set = None):
+    def __init__(self, graph:Graph, source_a_set:set = set(), source_b_set:set = set()):
         self.edges = graph.get_edges()
         self.sort_edges_by_cost()
         self.sources = graph.get_sources()
@@ -35,6 +35,8 @@ class MCST:
             if(share_edge_costs):
                 self.share_cost_of_edge(edge)
         
+        self.mcst = mcst_edges
+        self.mcst_cost = total_cost
         return mcst_edges, total_cost
     
     # TESTED
@@ -70,14 +72,111 @@ class MCST:
                 self.sets.remove(node_set)
         
         self.sets.append(combined_set)
-            
-    def share_cost_of_edge(self, edge):
-        pass
+    
+    # TESTED
+    def share_cost_of_edge(self, edge:Edge):
+        start_node = edge.get_start_node()
+        end_node = edge.get_end_node()
+        start_node_set, end_node_set = self.find_sets(start_node.get_label(), end_node.get_label())
 
+        join_type = self.determineJoiningComponents(start_node.get_label(), end_node.get_label())
+        # Switch
+        if join_type == 'nosource': # Case 1: no sources
+            self.share_proportionately(start_node_set, end_node_set, edge.get_cost())
+        
+        elif join_type == 'onesource': # Case 2: 1 source
+            sourceless_set, set_with_source = self.find_set_without_source(start_node_set, end_node_set)
+            beneficiaries = self.checkBenefiting(sourceless_set, set_with_source)
+            if not len(beneficiaries) == 0: # 2.a: Sourceless component benefits
+                self.share_evenly(beneficiaries, edge.get_cost())
+            else: # 2.b: No beneficiaries
+                self.remove_check_disconnected(edge, edge.get_cost())
+
+        elif join_type == 'bothsources': # Case 3: Both components 1 source
+            beneficiaries_start_set = self.checkBenefiting(start_node_set, end_node_set)
+            beneficiaries_end_set = self.checkBenefiting(end_node_set, start_node_set)
+
+            start_set_not_empty = not len(beneficiaries_start_set) == 0
+            end_set_not_empty = not len(beneficiaries_end_set) == 0
+
+            if start_set_not_empty and end_set_not_empty: # 3.a: Both components benefitting
+                self.share_proportionately(beneficiaries_start_set, beneficiaries_end_set, edge.get_cost())
+            elif start_set_not_empty: # 3.b: 1 component benefitting
+                self.share_evenly(beneficiaries_start_set, edge.get_cost())
+            elif end_set_not_empty: # 3.b: 1 component benefitting
+                self.share_evenly(beneficiaries_end_set, edge.get_cost())
+            else: # 3.c: No beneficiaries
+                self.remove_check_disconnected(edge, edge.get_cost())
+        
+        elif join_type == '2sources':
+            sourceless_set, _ = self.find_set_without_source(start_node_set, end_node_set)
+            self.share_evenly(sourceless_set, edge.get_cost())
+    
+    # TESTED
+    def determineJoiningComponents(self, start_node_label, end_node_label):
+        start_component, end_component = self.find_sets(start_node_label, end_node_label)
+
+        if self.hasSource(start_component) and self.hasSource(end_component):
+            return 'bothsources'
+        elif self.oneHasOneSource(start_component, end_component):
+            return 'onesource'
+        elif self.hasBothSources(start_component) or self.hasBothSources(end_component):
+            return '2sources'
+        
+        return 'nosource'
+    
+    # TESTED
+    def hasSource(self, component:set):
+        return component.intersection({'a'}) or component.intersection({'b'})
+    
+    # TESTED
+    def oneHasOneSource(self, first_component:set, second_component:set):
+        return ( (self.hasSource(first_component) and not self.hasSource(second_component) and not self.hasBothSources(first_component)) or # first source, second none AND first only 1 source
+                (not self.hasSource(first_component) and self.hasSource(second_component) and not self.hasBothSources(second_component)) ) # first none, second source AND second only 1 source
+    
+    # TESTED
+    def hasBothSources(self, component:set):
+        return component.intersection({'a'}) and component.intersection({'b'})
+
+    # TESTED
+    def find_set_without_source(self, first_set:set, second_set:set):
+        if first_set.intersection({'a'}) or first_set.intersection({'b'}):
+            return second_set, first_set
+        return first_set, second_set
+    
+    # TESTED
+    def checkBenefiting(self, set_to_check:set, other_set_with_source:set):
+        # Establish what counts as benefiting
+        check_source_a = self.has_this_source(other_set_with_source, {'a'})
+        check_source_b = self.has_this_source(other_set_with_source, {'b'})
+
+        beneficiaries = set()
+        for node in set_to_check:
+            if not type(node) == int:
+                continue
+
+            if check_source_a:
+                if node in self.source_a_set:
+                    beneficiaries.add(node)
+            
+            if check_source_b:
+                if node in self.source_b_set:
+                    beneficiaries.add(node)
+        
+        return beneficiaries
+    
+    # TESTED
+    def has_this_source(self, component:set, source:set):
+        return component.intersection(source)
+
+    # TESTED
     def remove_check_disconnected(self, edge:Edge, cost:float):
-        new_graph = Graph(self.edges)
+        new_graph = Graph(self.mcst)
         edges_new_graph = new_graph.get_edges()
-        edges_new_graph.remove(edge)
+        for new_edge in edges_new_graph:
+            if ( new_edge.get_start_node().get_label() == edge.get_start_node().get_label() and
+                 new_edge.get_end_node().get_label() == edge.get_end_node().get_label() ):
+                edges_new_graph.remove(new_edge)
         new_graph.set_edges(edges_new_graph)
 
         disconnected_players = []
@@ -141,3 +240,15 @@ class MCST:
     
     def getCostAllocation(self):
         return self.cost_allocation
+    
+    def setMCST(self, mcst:list[Edge]):
+        self.mcst = mcst
+    
+    def getMCST(self):
+        return self.mcst
+    
+    def setMCSTCost(self, mcst_cost:float):
+        self.mcst_cost = mcst_cost
+    
+    def getMCSTCost(self):
+        return self.mcst_cost

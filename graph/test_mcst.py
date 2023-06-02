@@ -158,25 +158,260 @@ def test_share_proportionately(graph:MCST):
     assert cost_allocation == [1.25, 1.25, 2.5]
 
 def test_check_disconnted_one(graph:MCST, mcstEdges:list[Edge]):
-    graph.setEdges(mcstEdges)
+    graph.setMCST(mcstEdges)
     graph.setSourceASet({3})
     graph.setSourceBSet({1, 2})
-    graph.remove_check_disconnected(graph.getEdges()[-1], 5)
+    graph.remove_check_disconnected(graph.getMCST()[-1], 7)
     cost_allocation = graph.getCostAllocation()
-    assert cost_allocation == [0, 0, 5]
+    assert cost_allocation == [0, 0, 7]
 
 def test_check_disconnted_multiple(graph:MCST, mcstEdges:list[Edge]):
-    graph.setEdges(mcstEdges)
+    graph.setMCST(mcstEdges)
     graph.setSourceASet({2, 3})
     graph.setSourceBSet({1})
-    graph.remove_check_disconnected(graph.getEdges()[-1], 5)
+    graph.remove_check_disconnected(graph.getMCST()[-1], 7)
     cost_allocation = graph.getCostAllocation()
-    assert cost_allocation == [0, 2.5, 2.5]
+    assert cost_allocation == [0, 3.5, 3.5]
 
 def test_check_disconnted_none(graph:MCST, mcstEdges:list[Edge]):
-    graph.setEdges(mcstEdges)
+    graph.setMCST(mcstEdges)
     graph.setSourceASet(set())
     graph.setSourceBSet({1, 2, 3})
-    graph.remove_check_disconnected(graph.getEdges()[-1], 5)
+    graph.remove_check_disconnected(graph.getMCST()[-1], 7)
     cost_allocation = graph.getCostAllocation()
     assert cost_allocation == [0, 0, 0]
+
+def test_find_set_without_source_second_set_a(graph:MCST):
+    first_set = {'a', 1, 2}
+    second_set = {3}
+    set_without_source, set_with_source = graph.find_set_without_source(first_set, second_set)
+    assert set_without_source == second_set
+    assert set_with_source == first_set
+
+def test_find_set_without_source_second_set_b(graph:MCST):
+    first_set = {'b', 1, 2}
+    second_set = {3}
+    set_without_source, set_with_source = graph.find_set_without_source(first_set, second_set)
+    assert set_without_source == second_set
+    assert set_with_source == first_set
+
+def test_find_set_without_source_first_set_a(graph:MCST):
+    first_set = {1, 2}
+    second_set = {'a', 3}
+    set_without_source, set_with_source = graph.find_set_without_source(first_set, second_set)
+    assert set_without_source == first_set
+    assert set_with_source == second_set
+
+def test_find_set_without_source_first_set_b(graph:MCST):
+    first_set = {1, 2}
+    second_set = {'b', 3}
+    set_without_source, set_with_source = graph.find_set_without_source(first_set, second_set)
+    assert set_without_source == first_set
+    assert set_with_source == second_set
+
+def test_has_both_sources_true(graph:MCST):
+    component = {'a', 'b', 1}
+    assert graph.hasBothSources(component)
+
+def test_has_both_sources_false_1(graph:MCST):
+    component = {'a', 1, 2, 3}
+    assert not graph.hasBothSources(component)
+
+def test_has_both_sources_false_none(graph:MCST):
+    component = {1, 2}
+    assert not graph.hasBothSources(component)
+
+def test_one_has_one_source_true_first(graph:MCST):
+    first_set = {'b', 3}
+    second_set = {1, 2}
+    assert graph.oneHasOneSource(first_set, second_set)
+
+def test_one_has_one_source_true_second(graph:MCST):
+    first_set = {1, 2}
+    second_set = {'a', 3}
+    assert graph.oneHasOneSource(first_set, second_set)
+
+def test_one_has_one_source_false_none(graph:MCST):
+    first_set = {1, 2}
+    second_set = {3}
+    assert not graph.oneHasOneSource(first_set, second_set)
+
+def test_one_has_one_source_false_first_both(graph:MCST):
+    first_set = {'a', 'b', 1, 2}
+    second_set = {3}
+    assert not graph.oneHasOneSource(first_set, second_set)
+
+def test_one_has_one_source_false_second_both(graph:MCST):
+    first_set = {1, 2, 3}
+    second_set = {'a', 'b'}
+    assert not graph.oneHasOneSource(first_set, second_set)
+
+def test_has_source_true_one(graph:MCST):
+    component = {'a', 2, 3}
+    assert graph.hasSource(component)
+
+def test_has_source_true_both(graph:MCST):
+    component = {'a', 'b', 2, 3}
+    assert graph.hasSource(component)
+
+def test_has_source_false(graph:MCST):
+    component = {1, 2, 3}
+    assert not graph.hasSource(component)
+
+def test_joining_components_no_source(graph:MCST):
+    sets_to_be = [{'a', 'b'}, {1, 2}, {3}]
+    graph.setSets(sets_to_be)
+    assert graph.determineJoiningComponents(2, 3) == 'nosource'
+
+def test_joining_components_one_source(graph:MCST):
+    sets_to_be = [{'a', 1}, {2, 3}, {'b'}]
+    graph.setSets(sets_to_be)
+    assert graph.determineJoiningComponents(1, 2) == 'onesource'
+
+def test_joining_components_both_sources(graph:MCST):
+    sets_to_be = [{'a', 1}, {2, 3}, {'b'}]
+    graph.setSets(sets_to_be)
+    assert graph.determineJoiningComponents(1, 'b') == 'bothsources'
+
+def test_joining_components_2_sources(graph:MCST):
+    sets_to_be = [{'a', 'b', 1}, {2, 3}]
+    graph.setSets(sets_to_be)
+    assert graph.determineJoiningComponents('a', 3) == '2sources'
+
+def test_has_this_source_true_a(graph:MCST):
+    component = {'a', 'b', 2}
+    assert graph.has_this_source(component, {'a'})
+
+def test_has_this_source_true_b(graph:MCST):
+    component = {'b', 2, 3}
+    assert graph.has_this_source(component, {'b'})
+
+def test_has_this_source_false_a(graph:MCST):
+    component = {1, 2, 3}
+    assert not graph.has_this_source(component, {'a'})
+
+def test_has_this_source_false_b(graph:MCST):
+    component = {1, 2, 3}
+    assert not graph.has_this_source(component, {'b'})
+
+def test_check_benefiting_all_want_a(graph:MCST):
+    check_set = {1, 2}
+    other_set = {'a', 3}
+    graph.setSourceASet({1, 2})
+    beneficiaries = graph.checkBenefiting(check_set, other_set)
+    assert beneficiaries == {1, 2}
+
+def test_check_benefiting_all_want_b(graph:MCST):
+    check_set = {1, 2}
+    other_set = {'b', 3}
+    graph.setSourceBSet({1, 2})
+    beneficiaries = graph.checkBenefiting(check_set, other_set)
+    assert beneficiaries == {1, 2}
+
+def test_check_benefiting_subset_want_a(graph:MCST):
+    check_set = {1, 2, 3}
+    other_set = {'a'}
+    graph.setSourceASet({2, 3})
+    beneficiaries = graph.checkBenefiting(check_set, other_set)
+    assert beneficiaries == {2, 3}
+
+def test_check_benefiting_subset_want_b(graph:MCST):
+    check_set = {1, 2, 3}
+    other_set = {'b'}
+    graph.setSourceBSet({2})
+    beneficiaries = graph.checkBenefiting(check_set, other_set)
+    assert beneficiaries == {2}
+
+def test_check_benefiting_all_both(graph:MCST):
+    check_set = {1, 2, 3}
+    other_set = {'a', 'b'}
+    graph.setSourceBSet({2})
+    graph.setSourceASet({1, 3})
+    beneficiaries = graph.checkBenefiting(check_set, other_set)
+    assert beneficiaries == {1, 2, 3}
+
+def test_check_benefiting_none_players(graph:MCST):
+    check_set = {1, 2, 3}
+    other_set = {'a', 'b'}
+    beneficiaries = graph.checkBenefiting(check_set, other_set)
+    assert beneficiaries == set()
+
+def test_check_benefiting_none_sources(graph:MCST):
+    check_set = {'b'}
+    other_set = {'a'}
+    graph.setSourceBSet({2})
+    graph.setSourceASet({1, 3})
+    beneficiaries = graph.checkBenefiting(check_set, other_set)
+    assert beneficiaries == set()
+
+def test_share_edge_cost_no_source(graph:MCST, mcstEdges:list[Edge]):
+    graph.setMCST(mcstEdges)
+    graph.setSourceASet({2, 3})
+    graph.setSourceBSet({1})
+    graph.setSets([{'a'}, {'b'}, {1, 2}, {3}])
+    graph.share_cost_of_edge(Edge(Node(label=2), Node(label=3), 6))
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [1.5, 1.5, 3]
+
+def test_share_edge_cost_one_source_beneficiaries(graph:MCST, mcstEdges:list[Edge]):
+    graph.setMCST(mcstEdges)
+    graph.setSourceASet({2, 3})
+    graph.setSourceBSet({1})
+    graph.setSets([{'a', 1, 2}, {'b'}, {3}])
+    graph.share_cost_of_edge(Edge(Node(type='source', label='a'), Node(label=3), 7))
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [0, 0, 7]
+
+def test_share_edge_cost_one_source_different_beneficiaries(graph:MCST, mcstEdges:list[Edge]):
+    graph.setMCST(mcstEdges)
+    graph.setSourceASet({1, 2})
+    graph.setSourceBSet({3})
+    graph.setSets([{'a'}, {'b'}, {1}, {2, 3}])
+    graph.share_cost_of_edge(Edge(Node(type='source', label='a'), Node(label=3), 10))
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [0, 10, 0]
+
+def test_share_edge_cost_one_source_no_beneficiaries(graph:MCST, mcstEdges:list[Edge]):
+    graph.setMCST(mcstEdges)
+    graph.setSourceASet({1, 2})
+    graph.setSourceBSet({3})
+    graph.setSets([{'a'}, {'b'}, {1, 2}, {3}])
+    graph.share_cost_of_edge(Edge(Node(type='source', label='a'), Node(label=3), 7))
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [3.5, 3.5, 0]
+
+def test_share_edge_cost_both_sources_no_beneficiaries(graph:MCST, mcstEdges:list[Edge]):
+    graph.setMCST(mcstEdges)
+    graph.setSourceASet({2, 3})
+    graph.setSourceBSet({1})
+    graph.setSets([{'a', 3}, {'b', 1}, {2}])
+    graph.share_cost_of_edge(Edge(Node(label=2), Node(label=3), 6))
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [0, 6, 0]
+
+def test_share_edge_cost_both_sources_one_beneficiaries(graph:MCST, mcstEdges:list[Edge]):
+    graph.setMCST(mcstEdges)
+    graph.setSourceASet({2})
+    graph.setSourceBSet({1, 3})
+    graph.setSets([{'a', 1}, {'b', 3}, {2}])
+    graph.share_cost_of_edge(Edge(Node(type='source', label='a'), Node(label=3), 7))
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [7, 0, 0]
+
+def test_share_edge_cost_both_sources_both_beneficiaries(graph:MCST, mcstEdges:list[Edge]):
+    graph.setMCST(mcstEdges)
+    graph.setSourceASet({2, 3})
+    graph.setSourceBSet({1})
+    graph.setSets([{'a', 1}, {'b', 2, 3}])
+    graph.share_cost_of_edge(Edge(Node(type='source', label='a'), Node(label=3), 7))
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [3.5, 1.75, 1.75]
+
+def test_share_edge_cost_2_sources(graph:MCST, mcstEdges:list[Edge]):
+    graph.setMCST(mcstEdges)
+    graph.setSourceASet({2, 3})
+    graph.setSourceBSet({1})
+    graph.setSets([{'a', 'b'}, {1, 2, 3}])
+    graph.share_cost_of_edge(Edge(Node(type='source', label='a'), Node(label=3), 7))
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [7/3, 7/3, 7/3]

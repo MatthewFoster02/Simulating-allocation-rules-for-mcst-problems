@@ -51,6 +51,7 @@ class Graph:
                 edges.append(Edge(start_node=nodes[i], end_node=nodes[j], cost=random.randint(1, 20)))
         return edges
     
+    # TESTED
     def check_path_between_2_nodes(self, node_u_label, node_v_label):
         visited = set()
         return self.depthFirstSearch(node_u_label, node_v_label, visited)
