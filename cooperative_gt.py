@@ -1,11 +1,12 @@
 import itertools
+import numpy as np
 from graph.node import Node
 from graph.edge import Edge
 from graph.graph import Graph
 from mcst import MCST
 
 class CoopMethods:
-    def __init__(self, graph:Graph):
+    def __init__(self, graph:Graph = None):
         self.graph = graph
     
     # TESTED
@@ -109,5 +110,128 @@ class CoopMethods:
             if (start_label == endpoint1 or end_label == endpoint1) and (start_label == endpoint2 or end_label == endpoint2):
                 return edge
     
-    def belongs_to_core(coalitions:dict, allocation:list):
-        pass
+    def belongs_to_core(self, coalitions:dict, allocation:list):
+        if len(coalitions) == 7:
+            return self.belongs_to_core_3_players(coalitions, allocation)
+        elif len(coalitions) == 15:
+            return self.belongs_to_core_4_players(coalitions, allocation)
+        else:
+            raise 'Game must have either 3 or 4 players, ie dictionary with 7 or 15 entries corresponding to the coalitions'
+    
+    def belongs_to_core_3_players(self, coalitions:dict, allocation:list):
+        if not len(allocation) == 3:
+            raise 'Allocation must be of length 3, as there are 3 players'
+        
+        # Convert to cost game allocation
+        allocation = [-x for x in allocation]
+        # Remove redundant final allocation
+        modified_allocation = np.array(allocation[:2])
+        c1 = coalitions['1']
+        c2 = coalitions['2']
+        c3 = coalitions['3']
+        c12 = coalitions['12']
+        c13 = coalitions['13']
+        c23 = coalitions['23']
+        c123 = coalitions['123']
+        # Convert to costs
+        c1*=-1
+        c2*=-1
+        c3*=-1
+        c12*=-1
+        c13*=-1
+        c23*=-1
+        c123*=-1
+
+        core_region = np.array([ [1, 0],
+                            [-1, 0],
+                            [0, 1],
+                            [0, -1],
+                            [1, 1],
+                            [-1, -1]])
+
+        b = np.array([c1,
+                      -c123 + c23,
+                      c2,
+                      -c123 + c13,
+                      c12,
+                      -c123 + c3])
+        
+        point = np.dot(core_region, modified_allocation.T) - b.T
+
+        return all(x >= 0 for x in point) # If all elements are >= 0, point is in core
+    
+    def belongs_to_core_4_players(self, coalitions:dict, allocation:list):
+        if not len(allocation) == 4:
+            raise 'Allocation must be of length 4, as there are 4 players'
+        
+        # Convert to cost game allocation
+        allocation = [-x for x in allocation]
+        # Remove redundant final allocation
+        modified_allocation = np.array(allocation[:3])
+        c1 = coalitions['1']
+        c2 = coalitions['2']
+        c3 = coalitions['3']
+        c4 = coalitions['4']
+        c12 = coalitions['12']
+        c13 = coalitions['13']
+        c14 = coalitions['14']
+        c23 = coalitions['23']
+        c24 = coalitions['24']
+        c34 = coalitions['34']
+        c123 = coalitions['123']
+        c124 = coalitions['124']
+        c134 = coalitions['134']
+        c234 = coalitions['234']
+        c1234 = coalitions['1234']
+        # Convert to costs
+        c1*=-1
+        c2*=-1
+        c3*=-1
+        c4*=-1
+        c12*=-1
+        c13*=-1
+        c14*=-1
+        c23*=-1
+        c24*=-1
+        c34*=-1
+        c123*=-1
+        c124*=-1
+        c134*=-1
+        c234*=-1
+        c1234*=-1
+
+        core_region = np.array([[1, 0, 0],
+                                [-1, 0, 0],
+                                [0, 1, 0],
+                                [0, -1, 0],
+                                [0, 0, 1],
+                                [0, 0, -1],
+                                [1, 1, 1],
+                                [-1, -1, -1],
+                                [1, 1, 0],
+                                [-1, -1, 0],
+                                [1, 0, 1],
+                                [-1, 0, -1],
+                                [0, 1, 1],
+                                [0, -1, -1]])
+
+        b = np.array([c1,
+                    -c1234 + c234,
+                    c2,
+                    -c1234 + c134,
+                    c3,
+                    -c1234 + c124,
+                    c123,
+                    -c1234 + c4,
+                    c12,
+                    -c1234 + c34,
+                    c13,
+                    -c1234 + c24,
+                    c23,
+                    -c1234 + c14])
+        
+        point = np.dot(core_region, modified_allocation.T) - b.T
+        print(point)
+        print(all(x >= 0 for x in point))
+        return all(x >= 0 for x in point) # If all elements are >= 0, point is in core
+
