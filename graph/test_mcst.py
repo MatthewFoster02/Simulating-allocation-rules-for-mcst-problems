@@ -15,7 +15,7 @@ def graph():
     
     edges = []
     edges.append(Edge(node_source_a, node_source_b, 12))
-    edges.append(Edge(node_source_a, node_player_1, 10))
+    edges.append(Edge(node_source_a, node_player_1, 11))
     edges.append(Edge(node_source_a, node_player_2, 8))
     edges.append(Edge(node_source_a, node_player_3, 7))
     edges.append(Edge(node_source_b, node_player_1, 3))
@@ -46,7 +46,7 @@ def sortedEdges():
     sorted_edges.append(Edge(node_source_a, node_player_3, 7))
     sorted_edges.append(Edge(node_source_a, node_player_2, 8))
     sorted_edges.append(Edge(node_source_b, node_player_2, 9))
-    sorted_edges.append(Edge(node_source_a, node_player_1, 10))
+    sorted_edges.append(Edge(node_source_a, node_player_1, 11))
     sorted_edges.append(Edge(node_source_a, node_source_b, 12))
     sorted_edges.append(Edge(node_player_1, node_player_2, 13))
     sorted_edges.append(Edge(node_player_1, node_player_3, 15))
@@ -415,3 +415,16 @@ def test_share_edge_cost_2_sources(graph:MCST, mcstEdges:list[Edge]):
     graph.share_cost_of_edge(Edge(Node(type='source', label='a'), Node(label=3), 7))
     cost_allocation = graph.getCostAllocation()
     assert cost_allocation == [7/3, 7/3, 7/3]
+
+def test_kruskal_with_sharing(graph:MCST):
+    graph.setSourceASet({1})
+    graph.setSourceBSet({2, 3})
+    _ = graph.kruskal()
+    #graph.setMCST(mcst_edges) 
+    graph.kruskal(share_edge_costs=True)
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [10, 6, 5]
+
+def test_generate_sets(graph:MCST):
+    sets = graph.generate_sets()
+    assert sets == [{'a'}, {'b'}, {1}, {2}, {3}]

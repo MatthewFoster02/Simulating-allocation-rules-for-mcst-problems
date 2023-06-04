@@ -108,3 +108,6 @@ class CoopMethods:
             end_label = edge.get_end_node().get_label()
             if (start_label == endpoint1 or end_label == endpoint1) and (start_label == endpoint2 or end_label == endpoint2):
                 return edge
+    
+    def belongs_to_core(coalitions:dict, allocation:list):
+        pass
