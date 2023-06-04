@@ -131,3 +131,79 @@ def test_coalition_values_4_players(graph4:Graph):
         '234': 14,
         '1234': 19
     }
+
+def test_allocation_in_core_3_players():
+    coop = CoopMethods()
+    coalitions = {
+        '1': 10,
+        '2': 9,
+        '3': 5,
+        '12': 19,
+        '13': 15,
+        '23': 11,
+        '123': 21
+    }
+
+    allocation = [10, 6, 5]
+    assert coop.belongs_to_core(coalitions, allocation)
+
+def test_allocation_in_core_4_players():
+    coop = CoopMethods()
+    coalitions = {
+        '1': 10,
+        '2': 9,
+        '3': 5,
+        '4': 3,
+        '12': 19,
+        '13': 15,
+        '14': 13,
+        '23': 11,
+        '24': 12,
+        '34': 8,
+        '123': 21,
+        '124': 22,
+        '134': 18,
+        '234': 14,
+        '1234': 19
+    }
+
+    allocation = [6, 6, 4, 3]
+    assert coop.belongs_to_core(coalitions, allocation)
+
+def test_allocation_not_in_core_3_players():
+    coop = CoopMethods()
+    coalitions = {
+        '1': 10,
+        '2': 9,
+        '3': 5,
+        '12': 19,
+        '13': 15,
+        '23': 11,
+        '123': 21
+    }
+
+    allocation = [5, 5, 11]
+    assert not coop.belongs_to_core(coalitions, allocation)
+
+def test_allocation_not_in_core_4_players():
+    coop = CoopMethods()
+    coalitions = {
+        '1': 10,
+        '2': 9,
+        '3': 5,
+        '4': 3,
+        '12': 19,
+        '13': 15,
+        '14': 13,
+        '23': 11,
+        '24': 12,
+        '34': 8,
+        '123': 21,
+        '124': 22,
+        '134': 18,
+        '234': 14,
+        '1234': 19
+    }
+
+    allocation = [3, 3, 7, 6]
+    assert not coop.belongs_to_core(coalitions, allocation)
