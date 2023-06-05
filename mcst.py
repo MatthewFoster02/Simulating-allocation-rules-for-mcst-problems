@@ -86,7 +86,6 @@ class MCST:
     
     # TESTED
     def share_cost_of_edge(self, edge:Edge):
-        print(f'EDGE: {edge.to_string()}')
         start_node = edge.get_start_node()
         end_node = edge.get_end_node()
         start_node_set, end_node_set = self.find_sets(start_node.get_label(), end_node.get_label())
@@ -94,22 +93,17 @@ class MCST:
         join_type = self.determineJoiningComponents(start_node.get_label(), end_node.get_label())
         # Switch
         if join_type == 'nosource': # Case 1: no sources
-            print('nosource\n')
             self.share_proportionately(start_node_set, end_node_set, edge.get_cost())
         
         elif join_type == 'onesource': # Case 2: 1 source
-            print('onesource\n')
             sourceless_set, set_with_source = self.find_set_without_source(start_node_set, end_node_set)
             beneficiaries = self.checkBenefiting(sourceless_set, set_with_source)
             if not len(beneficiaries) == 0: # 2.a: Sourceless component benefits
-                print('onesource - benefiting\n')
                 self.share_evenly(beneficiaries, edge.get_cost())
             else: # 2.b: No beneficiaries
-                print('onesource - not benefiting\n')
                 self.remove_check_disconnected(edge, edge.get_cost())
 
         elif join_type == 'bothsources': # Case 3: Both components 1 source
-            print('bothsources\n')
             beneficiaries_start_set = self.checkBenefiting(start_node_set, end_node_set)
             beneficiaries_end_set = self.checkBenefiting(end_node_set, start_node_set)
 
@@ -117,27 +111,21 @@ class MCST:
             end_set_not_empty = not len(beneficiaries_end_set) == 0
 
             if start_set_not_empty and end_set_not_empty: # 3.a: Both components benefitting
-                print('bothsources - both benefiting\n')
                 self.share_proportionately(beneficiaries_start_set, beneficiaries_end_set, edge.get_cost())
             elif start_set_not_empty: # 3.b: 1 component benefitting
-                print('bothsources - start benefiting\n')
                 self.share_evenly(beneficiaries_start_set, edge.get_cost())
             elif end_set_not_empty: # 3.b: 1 component benefitting
-                print('bothsources - end benefiting\n')
                 self.share_evenly(beneficiaries_end_set, edge.get_cost())
             else: # 3.c: No beneficiaries
-                print('bothsources - not benefiting\n')
                 self.remove_check_disconnected(edge, edge.get_cost())
         
         elif join_type == '2sources':
-            print('2sources\n')
             sourceless_set, _ = self.find_set_without_source(start_node_set, end_node_set)
             self.share_evenly(sourceless_set, edge.get_cost())
     
     # TESTED
     def determineJoiningComponents(self, start_node_label, end_node_label):
         start_component, end_component = self.find_sets(start_node_label, end_node_label)
-        print(f'START COMPONENT = {start_component} - END COMPONENT = {end_component}')
 
         if self.hasSource(start_component) and self.hasSource(end_component):
             return 'bothsources'
@@ -216,7 +204,6 @@ class MCST:
             return
         cost_split = cost/len(disconnected_players)
         for player in disconnected_players:
-            print(f'Sharing-player: {player}, cost: {cost_split}')
             self.cost_allocation[player-1] += cost_split
 
     # TESTED
@@ -231,7 +218,6 @@ class MCST:
         cost_split = cost_to_share/number_player_sharing
 
         for player_label in component:
-            print(f'Sharing-player: {player_label}, cost: {cost_split}')
             self.cost_allocation[player_label-1] += cost_split # Update allocation of players sharing cost
 
 

@@ -1,4 +1,5 @@
 import random
+
 from graph.node import Node
 from graph.edge import Edge
 

@@ -1,5 +1,6 @@
 import itertools
 import numpy as np
+
 from graph.node import Node
 from graph.edge import Edge
 from graph.graph import Graph
@@ -49,10 +50,8 @@ class CoopMethods:
 
 
         if mcst_full_graph_cost <= graph_a_mcst_cost + graph_b_mcst_cost:
-            print('mcst less')
             self.coalitions[''.join(map(str, self.player_labels))] = mcst_full_graph_cost
         else:
-            print('mcst more')
             self.coalitions[''.join(map(str, self.player_labels))] = graph_a_mcst_cost + graph_b_mcst_cost
 
         return self.coalitions

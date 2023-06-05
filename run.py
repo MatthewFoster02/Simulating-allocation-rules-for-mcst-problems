@@ -1,0 +1,92 @@
+import random
+
+from graph.graph import Graph
+from graph.node import Node
+from mcst import MCST
+from cooperative_gt import CoopMethods
+
+# TESTED
+def get_random_source_sets(players:list):
+    source_a_set = set()
+    source_b_set = set()
+    number_of_players = len(players)
+    for i, player in enumerate(players):
+        if not i == number_of_players-1:
+            if random.random() < 0.5:
+                source_a_set.add(player)
+                continue
+            
+            source_b_set.add(player)
+            continue
+
+        if len(source_a_set) == 0:
+            source_a_set.add(player)
+            continue
+        
+        if len(source_b_set) == 0:
+            source_b_set.add(player)
+            continue
+
+        if random.random() < 0.5:
+            source_a_set.add(player)
+            continue
+            
+        source_b_set.add(player)
+    
+    return source_a_set, source_b_set
+        
+# TESTED
+def get_mcst_cost_subgraph(graph:Graph, source_set:set, source:str):
+    coop = CoopMethods(graph=graph)
+    sub_graph_edges = coop.getEdgesBetweenPlayersAndSource(source_set, source)
+
+    graph_players = []
+    for player_label in source_set:
+        graph_players.append(Node(label=player_label))
+    
+    graph_mcst = MCST(graph=Graph(sub_graph_edges, sources=[Node(type='source', label='a')], players=graph_players))
+    _, graph_mcst_cost = graph_mcst.kruskal()
+    return graph_mcst_cost
+
+def run():
+    limiter = 0
+
+    while limiter < 100:
+        graph = Graph()
+        graph.generate_random_graph()
+        source_a_set, source_b_set = get_random_source_sets(graph.get_players())
+
+        mcst_instance = MCST(graph=graph, source_a_set=source_a_set, source_b_set=source_b_set)
+
+        # Check if graph will have 1 component optimal solution
+        _, mcst_full_cost = mcst_instance.kruskal()
+        mcst_a_cost = get_mcst_cost_subgraph(graph, source_a_set, 'a')
+        mcst_b_cost = get_mcst_cost_subgraph(graph, source_b_set, 'b')
+
+        if mcst_full_cost > mcst_a_cost + mcst_b_cost:
+            print(f'\nGraph has optimal solution with 2 components, skipping...\n')
+
+        coop = CoopMethods(graph=graph)
+
+        coalitions = coop.get_player_coalition_values(source_a_set, source_b_set)
+
+        # Get allocation using kruskal with sharing TRUE
+        mcst_instance.kruskal(share_edge_costs=True)
+        allocation = mcst_instance.getCostAllocation()
+
+        print(f'Coalitions: {coalitions}')
+        if not coop.belongs_to_core(coalitions, allocation):
+            print('CONTRADICTION:')
+            print(f'This is the graph:')
+            print(graph.to_string())
+            print(f'Coalitions: {coalitions}')
+            print(f'Allocation: {allocation}')
+            print('Allocation not in core of game... \n\n')
+            pass # Log out graph and other relevant information in order for it to be reproducible
+
+        limiter += 1
+        print(f'Graph {limiter}/100 completed...\n\n')
+
+    print('DONE')
+
+run()
