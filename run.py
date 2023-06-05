@@ -6,32 +6,32 @@ from mcst import MCST
 from cooperative_gt import CoopMethods
 
 # TESTED
-def get_random_source_sets(players:list):
+def get_random_source_sets(players:list[Node]):
     source_a_set = set()
     source_b_set = set()
     number_of_players = len(players)
     for i, player in enumerate(players):
         if not i == number_of_players-1:
             if random.random() < 0.5:
-                source_a_set.add(player)
+                source_a_set.add(player.get_label())
                 continue
             
-            source_b_set.add(player)
+            source_b_set.add(player.get_label())
             continue
 
         if len(source_a_set) == 0:
-            source_a_set.add(player)
+            source_a_set.add(player.get_label())
             continue
         
         if len(source_b_set) == 0:
-            source_b_set.add(player)
+            source_b_set.add(player.get_label())
             continue
 
         if random.random() < 0.5:
-            source_a_set.add(player)
+            source_a_set.add(player.get_label())
             continue
             
-        source_b_set.add(player)
+        source_b_set.add(player.get_label())
     
     return source_a_set, source_b_set
         
@@ -50,6 +50,9 @@ def get_mcst_cost_subgraph(graph:Graph, source_set:set, source:str):
 
 def run():
     limiter = 0
+
+    contradiction_counter = 0
+    two_component_optimal_counter = 0
 
     while limiter < 100:
         graph = Graph()
@@ -88,5 +91,5 @@ def run():
         print(f'Graph {limiter}/100 completed...\n\n')
 
     print('DONE')
-
-run()
+    print(f'\n{contradiction_counter}/100 CONTRADICTIONS')
+    print(f'{two_component_optimal_counter} times a randomly generated graph had 2 components in the optimal solution')

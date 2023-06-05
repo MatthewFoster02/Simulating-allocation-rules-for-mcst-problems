@@ -32,14 +32,14 @@ def graph():
     return graph
 
 def test_generate_source_sets_3():
-    players = [1, 2, 3]
+    players = [Node(label=1), Node(label=2), Node(label=3)]
     source_a_set, source_b_set = run.get_random_source_sets(players)
     assert 1 <= len(source_a_set) <= 2
     assert 1 <= len(source_b_set) <= 2
     assert source_a_set.union(source_b_set) == {1, 2, 3}
 
 def test_generate_source_sets_4():
-    players = [1, 2, 3, 4]
+    players = [Node(label=1), Node(label=2), Node(label=3), Node(label=4)]
     source_a_set, source_b_set = run.get_random_source_sets(players)
     assert 1 <= len(source_a_set) <= 3
     assert 1 <= len(source_b_set) <= 3
