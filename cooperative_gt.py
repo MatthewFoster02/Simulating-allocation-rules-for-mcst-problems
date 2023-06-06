@@ -77,17 +77,39 @@ class CoopMethods:
                     player_to_b = True
                     nodes_to_b.append(player_label)
             coalition_cost = 0
+
+            coalition_cost_a = 0
+            coalition_cost_b = 0
+            coalition_cost_full = 100000000
             if player_to_a:
                 edges_to_a = self.getEdgesBetweenPlayersAndSource(nodes_to_a, 'a')
                 mcst_a = MCST(Graph(edges_to_a, self.graph.get_sources(), self.graph.get_players()))
                 _, mcst_cost_a = mcst_a.kruskal()
-                coalition_cost += mcst_cost_a
+                coalition_cost_a = mcst_cost_a
             
             if player_to_b:
                 edges_to_b = self.getEdgesBetweenPlayersAndSource(nodes_to_b, 'b')
                 mcst_b = MCST(Graph(edges_to_b, self.graph.get_sources(), self.graph.get_players()))
                 _, mcst_cost_b = mcst_b.kruskal()
-                coalition_cost += mcst_cost_b
+                coalition_cost_b = mcst_cost_b
+            
+            if player_to_a and player_to_b:
+                edges_to_a = self.getEdgesBetweenPlayersAndSource(nodes_to_a, 'a')
+                edges_to_b = self.getEdgesBetweenPlayersAndSource(nodes_to_b, 'b')
+                edge_a_to_b = self.getEdgeBetweenSources()
+                all_edges = edges_to_a + edges_to_b
+                all_edges.append(edge_a_to_b)
+                mcst_all_edges = MCST(Graph(all_edges, self.graph.get_sources(), self.graph.get_players()))
+                _, mcst_all_edges_cost = mcst_all_edges.kruskal()
+                coalition_cost_full = mcst_all_edges_cost
+            
+            print(f'Order: {order} - a = {coalition_cost_a}. b = {coalition_cost_b}. both = {coalition_cost_full}')
+
+            if coalition_cost_full <= coalition_cost_a + coalition_cost_b:
+                coalition_cost = coalition_cost_full
+            else:
+                coalition_cost = coalition_cost_a + coalition_cost_b
+
             self.coalitions[coalition_key] = coalition_cost
         self.get_coalitions_with_multiple_players(number_players=number_players+1)
 
@@ -101,6 +123,13 @@ class CoopMethods:
             if (start_label in players or start_label == source) and (end_label in players or end_label == source):
                 edges.append(edge)
         return edges
+    
+    def getEdgeBetweenSources(self):
+        for edge in self.graph.get_edges():
+            start_label = edge.get_start_node().get_label()
+            end_label = edge.get_end_node().get_label()
+            if start_label == 'a' and end_label == 'b':
+                return edge
 
     # TESTED
     def getEdgeWithEndpoints(self, endpoint1, endpoint2) -> Edge:

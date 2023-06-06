@@ -94,6 +94,11 @@ def test_get_edges_between_two(graph:Graph):
     assert edges[0].to_string() == 'Node a is connected to 1 with cost of 10'
     assert edges[1].to_string() == 'Node a is connected to 3 with cost of 7'
 
+def test_get_edge_between_sources(graph:Graph):
+    coop = CoopMethods(graph)
+    edge = coop.getEdgeBetweenSources()
+    assert edge.to_string() == 'Node a is connected to b with cost of 12'
+
 def test_coalition_values_3_players(graph:Graph):
     coop = CoopMethods(graph)
     source_set_a = {1}

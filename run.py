@@ -82,6 +82,7 @@ def run():
             print('CONTRADICTION:')
             print(f'This is the graph:')
             print(graph.to_string())
+            print(f'\nThese are the source sets\nSource A: {source_a_set}. Source B: {source_b_set}.')
             print(f'Coalitions: {coalitions}')
             print(f'Allocation: {allocation}')
             print('Allocation not in core of game... \n\n')
