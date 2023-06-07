@@ -102,8 +102,6 @@ class CoopMethods:
                 mcst_all_edges = MCST(Graph(all_edges, self.graph.get_sources(), self.graph.get_players()))
                 _, mcst_all_edges_cost = mcst_all_edges.kruskal()
                 coalition_cost_full = mcst_all_edges_cost
-            
-            print(f'Order: {order} - a = {coalition_cost_a}. b = {coalition_cost_b}. both = {coalition_cost_full}')
 
             if coalition_cost_full <= coalition_cost_a + coalition_cost_b:
                 coalition_cost = coalition_cost_full

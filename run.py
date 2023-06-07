@@ -44,9 +44,18 @@ def get_mcst_cost_subgraph(graph:Graph, source_set:set, source:str):
     for player_label in source_set:
         graph_players.append(Node(label=player_label))
     
-    graph_mcst = MCST(graph=Graph(sub_graph_edges, sources=[Node(type='source', label='a')], players=graph_players))
+    graph_mcst = MCST(graph=Graph(sub_graph_edges, sources=[Node(type='source', label=source)], players=graph_players))
     _, graph_mcst_cost = graph_mcst.kruskal()
     return graph_mcst_cost
+
+def will_optimal_solution_have_2_components(mcst:MCST, graph:Graph, source_a_set:set, source_b_set:set):
+    # Check if graph will have 1 component optimal solution
+    _, mcst_full_cost = mcst.kruskal()
+    mcst_a_cost = get_mcst_cost_subgraph(graph, source_a_set, 'a')
+    mcst_b_cost = get_mcst_cost_subgraph(graph, source_b_set, 'b')
+    print(f'S = {mcst_full_cost}. Sa = {mcst_a_cost}. Sb = {mcst_b_cost}.')
+    return mcst_full_cost > mcst_a_cost + mcst_b_cost
+    
 
 def run():
     limiter = 0
@@ -61,12 +70,8 @@ def run():
 
         mcst_instance = MCST(graph=graph, source_a_set=source_a_set, source_b_set=source_b_set)
 
-        # Check if graph will have 1 component optimal solution
-        _, mcst_full_cost = mcst_instance.kruskal()
-        mcst_a_cost = get_mcst_cost_subgraph(graph, source_a_set, 'a')
-        mcst_b_cost = get_mcst_cost_subgraph(graph, source_b_set, 'b')
-
-        if mcst_full_cost > mcst_a_cost + mcst_b_cost:
+        if will_optimal_solution_have_2_components(mcst_instance, graph, source_a_set, source_b_set):
+            two_component_optimal_counter += 1
             print(f'\nGraph has optimal solution with 2 components, skipping...\n')
 
         coop = CoopMethods(graph=graph)
@@ -79,10 +84,11 @@ def run():
 
         print(f'Coalitions: {coalitions}')
         if not coop.belongs_to_core(coalitions, allocation):
+            contradiction_counter += 1
             print('CONTRADICTION:')
             print(f'This is the graph:')
             print(graph.to_string())
-            print(f'\nThese are the source sets\nSource A: {source_a_set}. Source B: {source_b_set}.')
+            print(f'Source A: {source_a_set}. Source B: {source_b_set}.')
             print(f'Coalitions: {coalitions}')
             print(f'Allocation: {allocation}')
             print('Allocation not in core of game... \n\n')
