@@ -17,7 +17,6 @@ class CoopMethods:
         self.source_b_set = source_b_set
         self.player_labels = []
         self.coalitions = {}
-        print(f'Source_set_a: {source_a_set}, Source_set_b: {source_b_set}')
         for player in self.graph.get_players():
             if player.get_label() in source_a_set:
                 self.coalitions[str(player.get_label())] = self.getEdgeWithEndpoints(player.get_label(), 'a').get_cost()
@@ -258,7 +257,5 @@ class CoopMethods:
                     -c1234 + c14])
         
         point = np.dot(core_region, modified_allocation.T) - b.T
-        print(point)
-        print(all(x >= 0 for x in point))
         return all(x >= 0 for x in point) # If all elements are >= 0, point is in core
 

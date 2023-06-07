@@ -110,6 +110,32 @@ def graph_breaking():
     graph = Graph(edges=edges, sources=sources, players=players)
     return graph
 
+@pytest.fixture
+def graph_breaking_2():
+    node_source_a = Node(type='source', label='a')
+    node_source_b = Node(type='source', label='b')
+    node_player_1 = Node(label=1)
+    node_player_2 = Node(label=2)
+    node_player_3 = Node(label=3)
+    
+    edges = []
+    edges.append(Edge(node_source_a, node_source_b, 15))
+    edges.append(Edge(node_source_a, node_player_1, 15))
+    edges.append(Edge(node_source_a, node_player_2, 13))
+    edges.append(Edge(node_source_a, node_player_3, 14))
+    edges.append(Edge(node_source_b, node_player_1, 16))
+    edges.append(Edge(node_source_b, node_player_2, 6))
+    edges.append(Edge(node_source_b, node_player_3, 2))
+    edges.append(Edge(node_player_1, node_player_2, 16))
+    edges.append(Edge(node_player_1, node_player_3, 4))
+    edges.append(Edge(node_player_2, node_player_3, 4))
+
+    sources = [node_source_a, node_source_b]
+    players = [node_player_1, node_player_2, node_player_3]
+
+    graph = Graph(edges=edges, sources=sources, players=players)
+    return graph
+
 def test_generate_source_sets_3():
     players = [Node(label=1), Node(label=2), Node(label=3)]
     source_a_set, source_b_set = run.get_random_source_sets(players)
@@ -152,3 +178,10 @@ def test_breaking_example(graph_breaking:Graph):
     mcst = MCST(graph=graph_breaking, source_a_set=source_a_set, source_b_set=source_b_set)
 
     assert run.will_optimal_solution_have_2_components(mcst, graph_breaking, source_a_set, source_b_set)
+
+def test_breaking_example_2(graph_breaking_2:Graph):
+    source_a_set = {1}
+    source_b_set = {2, 3}
+    mcst = MCST(graph=graph_breaking_2, source_a_set=source_a_set, source_b_set=source_b_set)
+
+    assert run.will_optimal_solution_have_2_components(mcst, graph_breaking_2, source_a_set, source_b_set)

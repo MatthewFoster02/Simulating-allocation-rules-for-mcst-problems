@@ -53,7 +53,7 @@ def will_optimal_solution_have_2_components(mcst:MCST, graph:Graph, source_a_set
     _, mcst_full_cost = mcst.kruskal()
     mcst_a_cost = get_mcst_cost_subgraph(graph, source_a_set, 'a')
     mcst_b_cost = get_mcst_cost_subgraph(graph, source_b_set, 'b')
-    print(f'S = {mcst_full_cost}. Sa = {mcst_a_cost}. Sb = {mcst_b_cost}.')
+    #print(f'S = {mcst_full_cost}. Sa = {mcst_a_cost}. Sb = {mcst_b_cost}.')
     return mcst_full_cost > mcst_a_cost + mcst_b_cost
     
 
@@ -73,6 +73,7 @@ def run():
         if will_optimal_solution_have_2_components(mcst_instance, graph, source_a_set, source_b_set):
             two_component_optimal_counter += 1
             print(f'\nGraph has optimal solution with 2 components, skipping...\n')
+            continue
 
         coop = CoopMethods(graph=graph)
 
@@ -82,7 +83,6 @@ def run():
         mcst_instance.kruskal(share_edge_costs=True)
         allocation = mcst_instance.getCostAllocation()
 
-        print(f'Coalitions: {coalitions}')
         if not coop.belongs_to_core(coalitions, allocation):
             contradiction_counter += 1
             print('CONTRADICTION:')
@@ -91,7 +91,7 @@ def run():
             print(f'Source A: {source_a_set}. Source B: {source_b_set}.')
             print(f'Coalitions: {coalitions}')
             print(f'Allocation: {allocation}')
-            print('Allocation not in core of game... \n\n')
+            print('Allocation not in core of game...')
             pass # Log out graph and other relevant information in order for it to be reproducible
 
         limiter += 1
@@ -99,4 +99,4 @@ def run():
 
     print('DONE')
     print(f'\n{contradiction_counter}/100 CONTRADICTIONS')
-    print(f'{two_component_optimal_counter} times a randomly generated graph had 2 components in the optimal solution')
+    print(f'{two_component_optimal_counter} times a randomly generated graph had 2 components in the optimal solution. {limiter+two_component_optimal_counter}')
