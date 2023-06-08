@@ -208,9 +208,25 @@ class MCST:
 
     # TESTED
     def share_proportionately(self, first_component:set, second_component:set, cost_to_share:float):
-        cost_split = cost_to_share/2
-        self.share_evenly(first_component, cost_split)
-        self.share_evenly(second_component, cost_split)
+        first_component_without_sources = first_component - {'a', 'b'} # remove source from components
+        second_component_without_sources = second_component - {'a', 'b'}
+        joined_component = first_component_without_sources.union(second_component_without_sources)
+        joined_component_size = len(joined_component)
+        for player in self.players:
+            if not player.get_label() in joined_component:
+                continue
+            player_component = set()
+            player_component_size = 0
+            if player.get_label() in first_component_without_sources:
+                player_component = first_component_without_sources
+                player_component_size = len(first_component_without_sources)
+            elif player.get_label() in second_component_without_sources:
+                player_component = second_component_without_sources
+                player_component_size = len(second_component_without_sources)
+            joined_less_player = joined_component - player_component
+            top_row_fraction = len(joined_less_player)
+            bottom_row_franction = joined_component_size * player_component_size
+            self.cost_allocation[player.get_label()-1] = (top_row_fraction / bottom_row_franction) * cost_to_share
 
     # TESTED
     def share_evenly(self, component:set, cost_to_share:float):

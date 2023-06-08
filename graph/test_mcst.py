@@ -149,13 +149,21 @@ def test_share_cost_evenly_multiple_players(graph:MCST):
     cost_allocation = graph.getCostAllocation()
     assert cost_allocation == [1.5, 1.5, 1.5]
 
-def test_share_proportionately(graph:MCST):
-    cost = 5
+def test_share_proportionately_same_size_components(graph:MCST):
+    cost = 4
+    component_sharing1 = {1}
+    component_sharing2 = {2}
+    graph.share_proportionately(component_sharing1, component_sharing2, cost)
+    cost_allocation = graph.getCostAllocation()
+    assert cost_allocation == [2, 2, 0]
+
+def test_share_proportionately_different_size_components(graph:MCST):
+    cost = 12
     component_sharing1 = {1, 2}
     component_sharing2 = {3}
     graph.share_proportionately(component_sharing1, component_sharing2, cost)
     cost_allocation = graph.getCostAllocation()
-    assert cost_allocation == [1.25, 1.25, 2.5]
+    assert cost_allocation == [2, 2, 8]
 
 def test_check_disconnted_one(graph:MCST, mcstEdges:list[Edge]):
     graph.setMCST(mcstEdges)
@@ -351,7 +359,7 @@ def test_share_edge_cost_no_source(graph:MCST, mcstEdges:list[Edge]):
     graph.setSets([{'a'}, {'b'}, {1, 2}, {3}])
     graph.share_cost_of_edge(Edge(Node(label=2), Node(label=3), 6))
     cost_allocation = graph.getCostAllocation()
-    assert cost_allocation == [1.5, 1.5, 3]
+    assert cost_allocation == [1, 1, 4]
 
 def test_share_edge_cost_one_source_beneficiaries(graph:MCST, mcstEdges:list[Edge]):
     graph.setMCST(mcstEdges)
@@ -403,9 +411,9 @@ def test_share_edge_cost_both_sources_both_beneficiaries(graph:MCST, mcstEdges:l
     graph.setSourceASet({2, 3})
     graph.setSourceBSet({1})
     graph.setSets([{'a', 1}, {'b', 2, 3}])
-    graph.share_cost_of_edge(Edge(Node(type='source', label='a'), Node(label=3), 7))
+    graph.share_cost_of_edge(Edge(Node(type='source', label='a'), Node(label=3), 9))
     cost_allocation = graph.getCostAllocation()
-    assert cost_allocation == [3.5, 1.75, 1.75]
+    assert cost_allocation == [6, 1.5, 1.5]
 
 def test_share_edge_cost_2_sources(graph:MCST, mcstEdges:list[Edge]):
     graph.setMCST(mcstEdges)
