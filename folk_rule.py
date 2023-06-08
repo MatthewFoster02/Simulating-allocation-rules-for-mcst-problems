@@ -7,14 +7,15 @@ class FolkRule:
         self.players = players
         self.cost_allocation = [0] * len(self.players)
     
-
-    
+    # TESTED
     def share_edge_cost(self, edge:Edge, current_components:list[set]):
         self.current_components = current_components
-        start_node_label = edge.get_start_node()
-        end_node_label = edge.get_end_node()
+        start_node_label = edge.get_start_node().get_label()
+        end_node_label = edge.get_end_node().get_label()
         start_node_component = self.get_component_of_node(start_node_label)
         end_node_component = self.get_component_of_node(end_node_label)
+
+        print(start_node_component, end_node_component)
 
         component_with_source = self.get_component_with_source(start_node_component, end_node_component) # Might return None
         if component_with_source is None:
@@ -29,15 +30,13 @@ class FolkRule:
             self.share_evenly(start_node_component, edge.get_cost())
             return
     
-
-
+    # TESTED
     def get_component_of_node(self, node_label):
         for component in self.current_components:
             if node_label in component:
                 return component
-    
 
-
+    # TESTED
     def get_component_with_source(self, first_component:set, second_component:set):
         for label in first_component:
             if label == self.source.get_label():
@@ -48,9 +47,8 @@ class FolkRule:
                 return second_component
         
         return None
-    
 
-
+    # TESTED
     def share_proportionately(self, first_component:set, second_component:set, cost_to_share:float):
         joined_component = first_component.union(second_component) # Get joined component
         joined_component_size = len(joined_component)
@@ -71,8 +69,7 @@ class FolkRule:
             bottom_row_franction = joined_component_size * player_component_size # Bottom row is joined set size * player set size
             self.cost_allocation[player.get_label()-1] = (top_row_fraction / bottom_row_franction) * cost_to_share # Player pays above fraction of the cost
 
-
-
+    # TESTED
     def share_evenly(self, component:set, cost_to_share:float):
         number_player_sharing = len(component)
         cost_split = cost_to_share/number_player_sharing
@@ -80,4 +77,9 @@ class FolkRule:
         for player_label in component:
             self.cost_allocation[player_label-1] += cost_split # Update allocation of players sharing cost
 
-        
+    # BOILERPLATE
+    def get_cost_allocation(self):
+        return self.cost_allocation
+
+    def set_components(self, components:list[set]):
+        self.current_components = components   
