@@ -59,20 +59,25 @@ def will_optimal_solution_have_2_components(mcst:MCST, graph:Graph, source_a_set
 
 def run():
     limiter = 0
+    limit = 1000000
 
     contradiction_counter = 0
     two_component_optimal_counter = 0
 
-    while limiter < 100:
+    current_percentage = 0
+    while limiter < limit:
         graph = Graph()
-        graph.generate_random_graph()
+        if random.random() < 0.5:
+            graph.generate_random_graph()
+        else:
+            graph.generate_random_graph(num_players=4)
         source_a_set, source_b_set = get_random_source_sets(graph.get_players())
 
         mcst_instance = MCST(graph=graph, source_a_set=source_a_set, source_b_set=source_b_set)
 
         if will_optimal_solution_have_2_components(mcst_instance, graph, source_a_set, source_b_set):
             two_component_optimal_counter += 1
-            print(f'\nGraph has optimal solution with 2 components, skipping...\n')
+            #print(f'\nGraph has optimal solution with 2 components, skipping...\n')
             continue
 
         coop = CoopMethods(graph=graph)
@@ -85,17 +90,29 @@ def run():
 
         if not coop.belongs_to_core(coalitions, allocation):
             contradiction_counter += 1
-            print('CONTRADICTION:')
-            print(f'This is the graph:')
-            print(graph.to_string())
-            print(f'Source A: {source_a_set}. Source B: {source_b_set}.')
-            print(f'Coalitions: {coalitions}')
-            print(f'Allocation: {allocation}')
-            print('Allocation not in core of game...')
-            pass # Log out graph and other relevant information in order for it to be reproducible
+            data = f"""
+CONTRADICTION on graph number {limiter}:\n
+Graph Edges:
+{graph.to_string()}
+Source A: {source_a_set} Source B: {source_b_set}
+Coalitions: {coalitions}
+Allocation: {allocation}
+Allocation not in core of game...\n\n"""
+            with open('contradictions.txt', 'a') as file:
+                file.write(data)
+            # print('CONTRADICTION:')
+            # print(f'This is the graph:')
+            # print(graph.to_string())
+            # print(f'Source A: {source_a_set}. Source B: {source_b_set}.')
+            # print(f'Coalitions: {coalitions}')
+            # print(f'Allocation: {allocation}')
+            # print('Allocation not in core of game...')
 
         limiter += 1
-        print(f'Graph {limiter}/100 completed...\n\n')
+        percent_complete = round((limiter/limit)*100)
+        if not percent_complete == current_percentage:
+            current_percentage = percent_complete
+            print(f'{current_percentage}% complete...')
 
     print('DONE')
     print(f'\n{contradiction_counter}/100 CONTRADICTIONS')
