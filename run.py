@@ -98,7 +98,7 @@ Source A: {source_a_set} Source B: {source_b_set}
 Coalitions: {coalitions}
 Allocation: {allocation}
 Allocation not in core of game...\n\n"""
-            with open('contradictions.txt', 'a') as file:
+            with open('contradictions_new_sharing.txt', 'a') as file:
                 file.write(data)
             # print('CONTRADICTION:')
             # print(f'This is the graph:')
