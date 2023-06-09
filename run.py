@@ -89,6 +89,8 @@ def run():
         allocation = mcst_instance.getCostAllocation()
 
         if not coop.belongs_to_core(coalitions, allocation):
+            if not sum(allocation) == list(coalitions.values())[-1]:
+                print(f'\nBTW Sum of cost allocation not equal to grand coalition cost. {sum(allocation)} != {list(coalitions.values())[-1]}')
             contradiction_counter += 1
             data = f"""
 CONTRADICTION on graph number {limiter}:\n
