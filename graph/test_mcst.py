@@ -124,7 +124,7 @@ def test_join_sets_different_sets(graph:MCST):
     node_v_set = {3}
     graph.join_sets(node_u_set, node_v_set)
     updatedStates = graph.getSets()
-    assert updatedStates == [{'b'}, {1, 2}, {'a', 3}]
+    assert set(frozenset(s) for s in updatedStates) == {frozenset({'b'}), frozenset({1, 2}), frozenset({'a', 3})}
 
 def test_join_sets_different_sets_in_order(graph:MCST):
     currentStates = [{1}, {2}, {3}, {'a'}]
