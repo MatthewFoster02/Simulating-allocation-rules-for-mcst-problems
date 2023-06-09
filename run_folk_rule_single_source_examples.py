@@ -37,6 +37,8 @@ Allocation not in core of game...\n\n"""
         
         limiter += 1
         print(f'{limiter}/{limit} complete...')
+        if not sum(cost_allocation) == list(coalitions.values())[-1]:
+            print(f'\nBTW Sum of cost allocation not equal to grand coalition cost. {sum(cost_allocation)} != {list(coalitions.values())[-1]}')
     
     print('DONE!')
     

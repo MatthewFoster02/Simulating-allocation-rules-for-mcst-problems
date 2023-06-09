@@ -291,3 +291,10 @@ def test_allocation_not_in_core_4_players():
 
     allocation = [3, 3, 7, 6]
     assert not coop.belongs_to_core(coalitions, allocation)
+
+def test_allocation_in_core_4_players_breaker():
+    coop = CoopMethods()
+    coalitions = {'1': 11, '2': 18, '3': 20, '4': 1, '12': 18, '13': 18, '14': 9, '23': 25, '24': 12, '34': 12, '123': 25, '124': 16, '134': 16, '234': 19, '1234': 23}
+
+    allocation = [7.33, 7.33, 7.34, 1]
+    assert coop.belongs_to_core(coalitions, allocation)
