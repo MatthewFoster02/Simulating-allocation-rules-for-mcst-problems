@@ -77,11 +77,18 @@ class MCST:
     # TESTED
     def join_sets(self, node_u_set:set, node_v_set:set):
         combined_set = node_u_set.union(node_v_set)
-
+        sets_to_remove = []
         for node_set in self.sets:
             if node_u_set.intersection(node_set) or node_v_set.intersection(node_set):
-                self.sets.remove(node_set)
+                sets_to_remove.append(node_set)
         
+        set_of_sets_to_remove = set(frozenset(s) for s in sets_to_remove)
+        set_of_current_sets = set(frozenset(s) for s in self.sets)
+
+        removed_duplicated = [set(s) for s in (set_of_current_sets - set_of_sets_to_remove)]
+
+        self.sets = list(removed_duplicated)
+
         self.sets.append(combined_set)
     
     # TESTED
