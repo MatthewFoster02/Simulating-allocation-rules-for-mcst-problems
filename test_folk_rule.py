@@ -50,9 +50,6 @@ def graph_4_players():
     players = [node_player_1, node_player_2, node_player_3, node_player_4]
     return Graph(edges=edges, sources=sources, players=players)
 
-# space for 4 player graph
-
-
 def test_share_evenly_one_players(graph_3_players:Graph):
     folkRule = FolkRule(source=graph_3_players.get_sources()[0], players=graph_3_players.get_players())
     folkRule.share_evenly({1}, 4)

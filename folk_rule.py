@@ -18,20 +18,14 @@ class FolkRule:
         component_with_source = self.get_component_with_source(start_node_component, end_node_component) # Might return None
         if component_with_source is None:
             self.share_proportionately(start_node_component, end_node_component, edge.get_cost())
-            print('no source')
-            print(f'Edge: {edge.to_string()}\nCurrent cost allocation: {self.cost_allocation}')
             return
         
         if component_with_source == start_node_component:
             self.share_evenly(end_node_component, edge.get_cost())
-            print('source in first component')
-            print(f'Edge: {edge.to_string()}\nCurrent cost allocation: {self.cost_allocation}')
             return
         
         if component_with_source == end_node_component:
             self.share_evenly(start_node_component, edge.get_cost())
-            print('source in second component')
-            print(f'Edge: {edge.to_string()}\nCurrent cost allocation: {self.cost_allocation}')
             return
     
     # TESTED

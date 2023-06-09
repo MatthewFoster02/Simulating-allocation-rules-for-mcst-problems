@@ -65,6 +65,51 @@ def graph4():
     return graph
 
 
+
+@pytest.fixture
+def graph_one_source():
+    node_source_a = Node(type='source', label='a')
+    node_player_1 = Node(label=1)
+    node_player_2 = Node(label=2)
+    node_player_3 = Node(label=3)
+
+    edges = []
+    edges.append(Edge(node_source_a, node_player_1, 8))
+    edges.append(Edge(node_source_a, node_player_2, 9))
+    edges.append(Edge(node_source_a, node_player_3, 8))
+    edges.append(Edge(node_player_1, node_player_2, 4))
+    edges.append(Edge(node_player_1, node_player_3, 10))
+    edges.append(Edge(node_player_2, node_player_3, 5))
+
+    sources = [node_source_a]
+    players = [node_player_1, node_player_2, node_player_3]
+    return Graph(edges=edges, sources=sources, players=players)
+
+@pytest.fixture
+def graph4_one_source():
+    node_source_a = Node(type='source', label='a')
+    node_player_1 = Node(label=1)
+    node_player_2 = Node(label=2)
+    node_player_3 = Node(label=3)
+    node_player_4 = Node(label=4)
+
+    edges = []
+    edges.append(Edge(node_source_a, node_player_1, 8))
+    edges.append(Edge(node_source_a, node_player_2, 9))
+    edges.append(Edge(node_source_a, node_player_3, 8))
+    edges.append(Edge(node_source_a, node_player_4, 3))
+    edges.append(Edge(node_player_1, node_player_2, 4))
+    edges.append(Edge(node_player_1, node_player_3, 10))
+    edges.append(Edge(node_player_1, node_player_4, 15))
+    edges.append(Edge(node_player_2, node_player_3, 5))
+    edges.append(Edge(node_player_2, node_player_4, 16))
+    edges.append(Edge(node_player_3, node_player_4, 12))
+
+    sources = [node_source_a]
+    players = [node_player_1, node_player_2, node_player_3, node_player_4]
+    return Graph(edges=edges, sources=sources, players=players)
+
+
 def test_get_edge_correct(graph:Graph):
     coop = CoopMethods(graph)
     first_node = 'a'
@@ -135,6 +180,40 @@ def test_coalition_values_4_players(graph4:Graph):
         '134': 18,
         '234': 14,
         '1234': 19
+    }
+
+def test_coalition_values_3_players_one_source(graph_one_source:Graph):
+    coop = CoopMethods(graph_one_source)
+    coaltitions = coop.get_coalitions_one_source()
+    assert coaltitions == {
+        '1': 8,
+        '2': 9,
+        '3': 8,
+        '12': 12,
+        '13': 16,
+        '23': 13,
+        '123': 17
+    }
+
+def test_coalition_values_4_players_one_source(graph4_one_source:Graph):
+    coop = CoopMethods(graph4_one_source)#
+    coaltitions = coop.get_coalitions_one_source()
+    assert coaltitions == {
+        '1': 8,
+        '2': 9,
+        '3': 8,
+        '4': 3,
+        '12': 12,
+        '13': 16,
+        '14': 11,
+        '23': 13,
+        '24': 12,
+        '34': 11,
+        '123': 17,
+        '124': 15,
+        '134': 19,
+        '234': 16,
+        '1234': 20
     }
 
 def test_allocation_in_core_3_players():
