@@ -241,7 +241,7 @@ class MCST:
             joined_less_player = joined_component - player_component # Get size of joined set less player set
             top_row_fraction = len(joined_less_player) # Top row of fraction is this size
             bottom_row_franction = joined_component_size * player_component_size # Bottom row is joined set size * player set size
-            self.cost_allocation[player.get_label()-1] = (top_row_fraction / bottom_row_franction) * cost_to_share # Player pays above fraction of the cost
+            self.cost_allocation[player.get_label()-1] += (top_row_fraction / bottom_row_franction) * cost_to_share # Player pays above fraction of the cost
 
     # TESTED
     def share_evenly(self, component:set, cost_to_share:float):
