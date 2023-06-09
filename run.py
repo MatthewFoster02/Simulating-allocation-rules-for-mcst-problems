@@ -89,8 +89,6 @@ def run():
         allocation = mcst_instance.getCostAllocation()
 
         if not coop.belongs_to_core(coalitions, allocation):
-            if not sum(allocation) == list(coalitions.values())[-1]:
-                print(f'\nBTW Sum of cost allocation not equal to grand coalition cost. {sum(allocation)} != {list(coalitions.values())[-1]}')
             contradiction_counter += 1
             data = f"""
 CONTRADICTION on graph number {limiter}:\n
@@ -99,7 +97,8 @@ Graph Edges:
 Source A: {source_a_set} Source B: {source_b_set}
 Coalitions: {coalitions}
 Allocation: {allocation}
-Allocation not in core of game...\n\n"""
+Allocation not in core of game...
+Sum of cost allocation and grand coalition cost: {sum(allocation)} != {list(coalitions.values())[-1]}\n\n"""
             with open('contradictions_new_sharing.txt', 'a') as file:
                 file.write(data)
             # print('CONTRADICTION:')
