@@ -5,6 +5,7 @@ from graph.edge import Edge
 from graph.graph import Graph
 from folk_rule import FolkRule
 from cooperative_gt import CoopMethods
+from mcst import MCST
 
 @pytest.fixture
 def graph_3_players():
@@ -144,3 +145,15 @@ def test_share_cost_of_edge_3_players_source_3(graph_3_players:Graph):
     components = [{1, 2, 3}, {'a'}]
     folkRule.share_edge_cost(new_edge, components)
     assert folkRule.get_cost_allocation() == [8/3, 8/3, 8/3]
+
+def test_folk_rule_3_player_graph(graph_3_players:Graph):
+    kruskal = MCST(graph=graph_3_players)
+    kruskal.kruskal(use_classical_folk_rule=True)
+    cost_allocation = kruskal.getCostAllocation()
+    assert cost_allocation == [5.5, 5.5, 6]
+
+def test_folk_rule_4_player_graph(graph_4_players:Graph):
+    kruskal = MCST(graph=graph_4_players)
+    kruskal.kruskal(use_classical_folk_rule=True)
+    cost_allocation = kruskal.getCostAllocation()
+    assert cost_allocation == [5.5, 5.5, 6, 3]

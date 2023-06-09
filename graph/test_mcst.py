@@ -126,6 +126,15 @@ def test_join_sets_different_sets(graph:MCST):
     updatedStates = graph.getSets()
     assert updatedStates == [{'b'}, {1, 2}, {'a', 3}]
 
+def test_join_sets_different_sets_in_order(graph:MCST):
+    currentStates = [{1}, {2}, {3}, {'a'}]
+    graph.setSets(currentStates)
+    node_u_set = {1}
+    node_v_set = {2}
+    graph.join_sets(node_u_set, node_v_set)
+    updatedStates = graph.getSets()
+    assert set(frozenset(s) for s in updatedStates) == {frozenset({3}), frozenset({'a'}), frozenset({1, 2})}
+
 def test_join_sets_same_set(graph:MCST):
     currentStates = [{'a'}, {'b'}, {1, 2}, {3}]
     graph.setSets(currentStates)
@@ -133,7 +142,7 @@ def test_join_sets_same_set(graph:MCST):
     node_v_set = {1, 2}
     graph.join_sets(node_u_set, node_v_set)
     updatedStates = graph.getSets()
-    assert updatedStates == [{'a'}, {'b'}, {3}, {1, 2}]
+    assert set(frozenset(s) for s in updatedStates) == {frozenset({'a'}), frozenset({'b'}), frozenset({3}), frozenset({1, 2})}
 
 def test_share_cost_evenly_one_player(graph:MCST):
     cost = 3

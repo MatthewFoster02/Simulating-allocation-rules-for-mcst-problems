@@ -15,19 +15,23 @@ class FolkRule:
         start_node_component = self.get_component_of_node(start_node_label)
         end_node_component = self.get_component_of_node(end_node_label)
 
-        print(start_node_component, end_node_component)
-
         component_with_source = self.get_component_with_source(start_node_component, end_node_component) # Might return None
         if component_with_source is None:
             self.share_proportionately(start_node_component, end_node_component, edge.get_cost())
+            print('no source')
+            print(f'Edge: {edge.to_string()}\nCurrent cost allocation: {self.cost_allocation}')
             return
         
         if component_with_source == start_node_component:
             self.share_evenly(end_node_component, edge.get_cost())
+            print('source in first component')
+            print(f'Edge: {edge.to_string()}\nCurrent cost allocation: {self.cost_allocation}')
             return
         
         if component_with_source == end_node_component:
             self.share_evenly(start_node_component, edge.get_cost())
+            print('source in second component')
+            print(f'Edge: {edge.to_string()}\nCurrent cost allocation: {self.cost_allocation}')
             return
     
     # TESTED
@@ -67,7 +71,7 @@ class FolkRule:
             joined_less_player = joined_component - player_component # Get size of joined set less player set
             top_row_fraction = len(joined_less_player) # Top row of fraction is this size
             bottom_row_franction = joined_component_size * player_component_size # Bottom row is joined set size * player set size
-            self.cost_allocation[player.get_label()-1] = (top_row_fraction / bottom_row_franction) * cost_to_share # Player pays above fraction of the cost
+            self.cost_allocation[player.get_label()-1] += (top_row_fraction / bottom_row_franction) * cost_to_share # Player pays above fraction of the cost
 
     # TESTED
     def share_evenly(self, component:set, cost_to_share:float):
