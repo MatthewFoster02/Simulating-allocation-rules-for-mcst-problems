@@ -184,7 +184,7 @@ def test_coalition_values_4_players(graph4:Graph):
 
 def test_coalition_values_3_players_one_source(graph_one_source:Graph):
     coop = CoopMethods(graph_one_source)
-    coaltitions = coop.get_coalitions_one_source()
+    coaltitions = coop.get_coalitions_one_source('a')
     assert coaltitions == {
         '1': 8,
         '2': 9,
@@ -197,7 +197,7 @@ def test_coalition_values_3_players_one_source(graph_one_source:Graph):
 
 def test_coalition_values_4_players_one_source(graph4_one_source:Graph):
     coop = CoopMethods(graph4_one_source)#
-    coaltitions = coop.get_coalitions_one_source()
+    coaltitions = coop.get_coalitions_one_source('a')
     assert coaltitions == {
         '1': 8,
         '2': 9,
@@ -296,5 +296,12 @@ def test_allocation_in_core_4_players_breaker():
     coop = CoopMethods()
     coalitions = {'1': 11, '2': 18, '3': 20, '4': 1, '12': 18, '13': 18, '14': 9, '23': 25, '24': 12, '34': 12, '123': 25, '124': 16, '134': 16, '234': 19, '1234': 23}
 
-    allocation = [7.33, 7.33, 7.34, 1]
+    allocation = [7.33, 7.33, 7.33, 1]
+    assert coop.belongs_to_core(coalitions, allocation)
+
+def test_allocation_in_core_4_players_breaker_doubler():
+    coop = CoopMethods()
+    coalitions = {'1': 7, '2': 8, '3': 18, '4': 7, '12': 12, '13': 12, '14': 14, '23': 11, '24': 15, '34': 25, '123': 15, '124': 19, '134': 19, '234': 18, '1234': 22}
+
+    allocation = [5.66, 4.66, 4.66, 7.0]
     assert coop.belongs_to_core(coalitions, allocation)

@@ -1,6 +1,7 @@
 import pytest
 
 import run
+import run_folk_rule_2_component_solutions
 from graph.node import Node
 from graph.edge import Edge
 from graph.graph import Graph
@@ -185,3 +186,83 @@ def test_breaking_example_2(graph_breaking_2:Graph):
     mcst = MCST(graph=graph_breaking_2, source_a_set=source_a_set, source_b_set=source_b_set)
 
     assert run.will_optimal_solution_have_2_components(mcst, graph_breaking_2, source_a_set, source_b_set)
+
+def test_combining_allocations_3_players():
+    source_a_set = {2, 3}
+    source_b_set = {1}
+    allocation_a = [3, 6]
+    allocation_b = [9]
+    combined_allocation = run_folk_rule_2_component_solutions.join_sub_allocations(allocation_a, allocation_b, source_a_set, source_b_set)
+    assert combined_allocation == [9, 3, 6]
+
+def test_combining_allocations_4_players():
+    source_a_set = {2, 3}
+    source_b_set = {1, 4}
+    allocation_a = [3, 6]
+    allocation_b = [9, 21]
+    combined_allocation = run_folk_rule_2_component_solutions.join_sub_allocations(allocation_a, allocation_b, source_a_set, source_b_set)
+    assert combined_allocation == [9, 3, 6, 21]
+
+def test_getting_subgraph_source_a(graph:Graph):
+    source_a_set = {1, 2}
+    subgraph_a = run_folk_rule_2_component_solutions.get_subgraph(graph=graph, source_set=source_a_set, source_label='a')
+    sources = subgraph_a.get_sources()
+    players = subgraph_a.get_players()
+
+    expected_subgraph_edges = []
+    expected_subgraph_edges.append(Edge(Node(type='source', label='a'), Node(label=1), cost=10))
+    expected_subgraph_edges.append(Edge(Node(type='source', label='a'), Node(label=2), cost=8))
+    expected_subgraph_edges.append(Edge(Node(label=1), Node(label=2), cost=13))
+
+    assert sources[0].to_string() == 'Label: a Type: source'
+    for player in players:
+        assert player.to_string() == 'Label: 1 Type: player' or player.to_string() == 'Label: 2 Type: player'
+    
+    subgraph_a_edges_str = ''
+    expected_subgraph_edges_str = ''
+    for edge1, edge2 in zip(subgraph_a.get_edges(), expected_subgraph_edges):
+        subgraph_a_edges_str += edge1.to_string()
+        expected_subgraph_edges_str += edge2.to_string()
+    assert subgraph_a_edges_str == expected_subgraph_edges_str
+
+def test_getting_subgraph_source_b(graph:Graph):
+    source_b_set = {3}
+    subgraph_b = run_folk_rule_2_component_solutions.get_subgraph(graph=graph, source_set=source_b_set, source_label='b')
+    sources = subgraph_b.get_sources()
+    players = subgraph_b.get_players()
+
+    expected_subgraph_edges = []
+    expected_subgraph_edges.append(Edge(Node(type='source', label='b'), Node(label=3), cost=5))
+
+    assert sources[0].to_string() == 'Label: b Type: source'
+    assert players[0].to_string() == 'Label: 3 Type: player'
+    
+    subgraph_b_edges_str = ''
+    expected_subgraph_edges_str = ''
+    for edge1, edge2 in zip(subgraph_b.get_edges(), expected_subgraph_edges):
+        subgraph_b_edges_str += edge1.to_string()
+        expected_subgraph_edges_str += edge2.to_string()
+    assert subgraph_b_edges_str == expected_subgraph_edges_str
+
+def test_getting_subgraph_source_b_2_players(graph:Graph):
+    source_b_set = {2, 3}
+    subgraph_b = run_folk_rule_2_component_solutions.get_subgraph(graph=graph, source_set=source_b_set, source_label='b')
+    sources = subgraph_b.get_sources()
+    players = subgraph_b.get_players()
+
+    expected_subgraph_edges = []
+    expected_subgraph_edges.append(Edge(Node(type='source', label='b'), Node(label=2), cost=9))
+    expected_subgraph_edges.append(Edge(Node(type='source', label='b'), Node(label=3), cost=5))
+    expected_subgraph_edges.append(Edge(Node(label=2), Node(label=3), cost=6))
+
+    assert sources[0].to_string() == 'Label: b Type: source'
+    for player in players:
+        assert player.to_string() == 'Label: 2 Type: player' or player.to_string() == 'Label: 3 Type: player'
+    
+    subgraph_b_edges_str = ''
+    expected_subgraph_edges_str = ''
+    for edge1, edge2 in zip(subgraph_b.get_edges(), expected_subgraph_edges):
+        subgraph_b_edges_str += edge1.to_string()
+        expected_subgraph_edges_str += edge2.to_string()
+    assert subgraph_b_edges_str == expected_subgraph_edges_str
+

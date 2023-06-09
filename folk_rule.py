@@ -5,7 +5,7 @@ class FolkRule:
     def __init__(self, source:Node, players:list[Node]):
         self.source = source
         self.players = players
-        self.cost_allocation = [0] * len(self.players)
+        self.cost_allocation = {key.get_label(): 0 for key in players}
     
     # TESTED
     def share_edge_cost(self, edge:Edge, current_components:list[set]):
@@ -65,7 +65,7 @@ class FolkRule:
             joined_less_player = joined_component - player_component # Get size of joined set less player set
             top_row_fraction = len(joined_less_player) # Top row of fraction is this size
             bottom_row_franction = joined_component_size * player_component_size # Bottom row is joined set size * player set size
-            self.cost_allocation[player.get_label()-1] += (top_row_fraction / bottom_row_franction) * cost_to_share # Player pays above fraction of the cost
+            self.cost_allocation[player.get_label()] += (top_row_fraction / bottom_row_franction) * cost_to_share # Player pays above fraction of the cost
 
     # TESTED
     def share_evenly(self, component:set, cost_to_share:float):
@@ -73,11 +73,11 @@ class FolkRule:
         cost_split = cost_to_share/number_player_sharing
 
         for player_label in component:
-            self.cost_allocation[player_label-1] += cost_split # Update allocation of players sharing cost
+            self.cost_allocation[player_label] += cost_split # Update allocation of players sharing cost
 
     # BOILERPLATE
     def get_cost_allocation(self):
-        return self.cost_allocation
+        return list(self.cost_allocation.values())
 
     def set_components(self, components:list[set]):
         self.current_components = components   

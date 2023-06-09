@@ -110,16 +110,18 @@ class CoopMethods:
             self.coalitions[coalition_key] = coalition_cost
         self.get_coalitions_with_multiple_players(number_players=number_players+1)
     
-    def get_coalitions_one_source(self):
+    def get_coalitions_one_source(self, source_label:str):
         # SINGLE PLAYER COALITIONS
         self.player_labels = []
         self.coalitions = {}
+        self.source_label = source_label
         for player in self.graph.get_players():
-            self.coalitions[str(player.get_label())] = self.getEdgeWithEndpoints(player.get_label(), 'a').get_cost()
+            self.coalitions[str(player.get_label())] = self.getEdgeWithEndpoints(player.get_label(), source_label).get_cost()
             self.player_labels.append(player.get_label())
         
         # MULTI-PLAYER COALITIONS
-        self.get_coalitions_with_multiple_players_one_source(2)
+        if len(self.graph.get_edges()) > 2:
+            self.get_coalitions_with_multiple_players_one_source(2)
 
         # GRAND COALITION
         kruskal = MCST(graph=self.graph)
@@ -134,7 +136,7 @@ class CoopMethods:
         
         player_orders = list(itertools.combinations(self.player_labels, number_players))
         for order in player_orders:
-            edges = self.getEdgesBetweenPlayersAndSource(list(order), 'a')
+            edges = self.getEdgesBetweenPlayersAndSource(list(order), self.source_label)
             kruskal = MCST(Graph(edges, self.graph.get_sources(), self.graph.get_players()))
             _, coalition_cost = kruskal.kruskal()
             self.coalitions[''.join(str(x) for x in order)] = coalition_cost
@@ -162,7 +164,9 @@ class CoopMethods:
         for edge in self.graph.get_edges():
             start_label = edge.get_start_node().get_label()
             end_label = edge.get_end_node().get_label()
-            if (start_label == endpoint1 or end_label == endpoint1) and (start_label == endpoint2 or end_label == endpoint2):
+            if start_label == endpoint1 and end_label == endpoint2: # If start label is endpoint1 and end label is endpoint2, found ege!
+                return edge
+            if start_label == endpoint2 and end_label == endpoint1: # If start label is endpoint2 and end label is endpoint1, found edge!
                 return edge
     
     def belongs_to_core(self, coalitions:dict, allocation:list):
@@ -277,7 +281,7 @@ class CoopMethods:
                     c3,
                     -c1234 + c124,
                     c123,
-                    -c1234 + c4,
+                    -c1234 + c4-0.05,
                     c12,
                     -c1234 + c34,
                     c13,
@@ -286,5 +290,6 @@ class CoopMethods:
                     -c1234 + c14])
         
         point = np.dot(core_region, modified_allocation.T) - b.T
+        print(point)
         return all(x >= 0 for x in point) # If all elements are >= 0, point is in core
 

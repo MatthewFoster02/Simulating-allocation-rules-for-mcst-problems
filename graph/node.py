@@ -14,3 +14,6 @@ class Node:
     
     def get_label(self):
         return self.label
+    
+    def to_string(self):
+        return f'Label: {self.label} Type: {self.type}'
