@@ -290,6 +290,5 @@ class CoopMethods:
                     -c1234 + c14])
         
         point = np.dot(core_region, modified_allocation.T) - b.T
-        print(point)
         return all(x >= 0 for x in point) # If all elements are >= 0, point is in core
 

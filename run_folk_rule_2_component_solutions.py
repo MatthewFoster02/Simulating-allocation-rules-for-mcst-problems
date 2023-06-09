@@ -46,7 +46,7 @@ def join_sub_allocations(allocation_a:list[float], allocation_b:list[float], sou
 
 
 def run():
-    limit = 100
+    limit = 1000000
     limiter = 0
 
     graph_a_contradiction_counter = 0
@@ -64,7 +64,7 @@ def run():
         
         mcst_instance = MCST(graph=graph, source_a_set=source_a_set, source_b_set=source_b_set)
         if not will_optimal_solution_have_2_components(mcst=mcst_instance, graph=graph, source_a_set=source_a_set, source_b_set=source_b_set):
-            print('Solution has one component, skipping...')
+            #print('Solution has one component, skipping...')
             continue
 
         graph_a = get_subgraph(graph, source_a_set, 'a')
