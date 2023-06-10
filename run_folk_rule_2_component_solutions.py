@@ -53,6 +53,8 @@ def run():
     graph_b_contradiction_counter = 0
     contradiction_counter = 0
 
+    contradiction_counter_not_4 = 0
+
     current_percentage = 0
     while limiter < limit:
         graph = Graph()
@@ -98,8 +100,13 @@ def run():
         full_graph_allocation = join_sub_allocations(allocation_a, allocation_b, source_a_set, source_b_set)
 
         if not coop_full_graph.belongs_to_core(full_graph_coalitions, full_graph_allocation):
-            contradiction_counter += 1
-            data = f"""
+            if len(graph_a_coalitions) == 1 and '4' in list(graph_a_coalitions.keys()):
+                contradiction_counter += 1
+            elif len(graph_b_coalitions) == 1 and '4' in list(graph_b_coalitions.keys()):
+                contradiction_counter += 1
+            else:
+                contradiction_counter_not_4 += 1
+                data = f"""
 CONTRADICTION on graph number {limiter}:\n
 Graph Edges:
 {graph.to_string()}
@@ -112,8 +119,8 @@ Graph A:
 {graph_a.to_string()} {graph_a_coalitions} {allocation_a}
 Graph B:
 {graph_b.to_string()} {graph_b_coalitions} {allocation_b}\n\n"""
-            with open('contradictions.txt', 'a') as file:
-                file.write(data)
+                with open('folk_rule_2_components_contradictions.txt', 'a') as file:
+                    file.write(data)
         
         limiter += 1
         percent_complete = round((limiter/limit)*100)
@@ -123,7 +130,19 @@ Graph B:
 
     print('DONE')
     print(f'\n{contradiction_counter}/{limit} CONTRADICTIONS')
+    print(f'\n{contradiction_counter_not_4}/{limit} CONTRADICTIONS')
     print(f'\n{graph_a_contradiction_counter}/{limit} SUBGRAPH A CONTRADICTIONS')
     print(f'\n{graph_b_contradiction_counter}/{limit} SUBGRAPH B CONTRADICTIONS')
 
 run()
+
+
+# def test_coalition_checker(graph_a_coalitions:dict, graph_b_coalitions:dict):
+#     # print(len(graph_a_coalitions))
+#     # print(list(graph_a_coalitions.keys()))
+#     if len(graph_a_coalitions) == 1 and '4' in list(graph_a_coalitions.keys()):
+#         return 0
+#     elif len(graph_b_coalitions) == 1 and '4' in list(graph_b_coalitions.keys()):
+#         return 1
+#     else:
+#         return 2
