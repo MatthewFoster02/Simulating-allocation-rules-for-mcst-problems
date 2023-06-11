@@ -85,7 +85,8 @@ def run():
         coalitions = coop.get_player_coalition_values(source_a_set, source_b_set)
 
         # Get allocation using kruskal with sharing TRUE
-        mcst_instance.kruskal(share_edge_costs=True)
+        mcst_instance.kruskal()
+        mcst_instance.prim()
         allocation = mcst_instance.getCostAllocation()
 
         if not coop.belongs_to_core(coalitions, allocation):
@@ -99,7 +100,7 @@ Coalitions: {coalitions}
 Allocation: {allocation}
 Allocation not in core of game...
 Sum of cost allocation and grand coalition cost: {sum(allocation)} != {list(coalitions.values())[-1]}\n\n"""
-            with open('contradictions_new_sharing.txt', 'a') as file:
+            with open('contradiction_new_rule.txt', 'a') as file:
                 file.write(data)
             # print('CONTRADICTION:')
             # print(f'This is the graph:')

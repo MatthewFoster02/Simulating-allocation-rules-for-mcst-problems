@@ -1,3 +1,5 @@
+import copy
+
 from graph.graph import Graph
 from graph.edge import Edge
 
@@ -12,9 +14,6 @@ class MCST:
         self.source_b_set = source_b_set
         self.cost_allocation = [0] * len(self.players)
     
-
-
-
     def generate_sets(self):
         components = []
         for source in self.sources:
@@ -52,6 +51,58 @@ class MCST:
         self.mcst_cost = total_cost
         return mcst_edges, total_cost
     
+    # TESTED
+    def prim(self):
+        # RESET COMPONENTS
+        self.sets = self.generate_sets()
+        sources = {'a', 'b'}
+        potential_players = {1, 2, 3, 4} # Game has either 3 or 4 players...
+        edges_shared = []
+        # Checking first for edges containing sources, sharing their cost
+        for mcst_edge in self.mcst:
+            edge_found = False
+            start_label = mcst_edge.get_start_node().get_label()
+            end_label = mcst_edge.get_end_node().get_label()
+            # First check for edge between the two sources
+            if start_label in sources and end_label in sources:
+                edge_found = True
+                self.remove_check_disconnected(mcst_edge, mcst_edge.get_cost())
+            # Check if edge is between player and source
+            elif start_label in sources and end_label in potential_players:
+                edge_found = True
+                if self.playerWantsSource(source_label=start_label, player_label=end_label):
+                    self.cost_allocation[end_label-1] = mcst_edge.get_cost()
+                else:
+                    self.remove_check_disconnected(mcst_edge, mcst_edge.get_cost())
+            elif start_label in potential_players and end_label in sources:
+                edge_found = True
+                if self.playerWantsSource(source_label=end_label, player_label=start_label):
+                    self.cost_allocation[start_label-1] = mcst_edge.get_cost()
+                else:
+                    self.remove_check_disconnected(mcst_edge, mcst_edge.get_cost())
+            
+            if edge_found:
+                start_component, end_component = self.find_sets(start_label, end_label)
+                self.join_sets(start_component, end_component)
+                edges_shared.append(mcst_edge.to_string())
+        
+        # Checking rest of the edges
+        for mcst_edge in self.mcst:
+            if mcst_edge.to_string() in edges_shared: # If edge already shared skip...
+                continue
+            self.share_cost_of_edge(mcst_edge)
+            start_component, end_component = self.find_sets(mcst_edge.get_start_node().get_label(), mcst_edge.get_end_node().get_label())
+            self.join_sets(start_component, end_component)
+
+    # TESTED
+    def playerWantsSource(self, source_label:str, player_label:int):
+        if source_label == 'a' and player_label in self.source_a_set:
+            return True
+        
+        if source_label == 'b' and player_label in self.source_b_set:
+            return True
+        return False
+
     # TESTED
     def is_cycle_created(self, edge:Edge):
         node_u = edge.get_start_node()
@@ -190,7 +241,7 @@ class MCST:
     # TESTED
     def remove_check_disconnected(self, edge:Edge, cost:float):
         new_graph = Graph(self.mcst)
-        edges_new_graph = new_graph.get_edges()
+        edges_new_graph = copy.deepcopy(new_graph.get_edges())
         for new_edge in edges_new_graph:
             if ( new_edge.get_start_node().get_label() == edge.get_start_node().get_label() and
                  new_edge.get_end_node().get_label() == edge.get_end_node().get_label() ):
