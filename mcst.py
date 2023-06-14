@@ -2,7 +2,7 @@ import copy
 
 from graph.graph import Graph
 from graph.edge import Edge
-from folk_rule import FolkRule
+from classical_folk_rule.folk_rule import FolkRule
 
 class MCST:
     def __init__(self, graph:Graph, source_a_set:set = set(), source_b_set:set = set()):

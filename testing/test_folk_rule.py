@@ -3,7 +3,7 @@ import pytest
 from graph.node import Node
 from graph.edge import Edge
 from graph.graph import Graph
-from folk_rule import FolkRule
+from classical_folk_rule.folk_rule import FolkRule
 from mcst import MCST
 
 @pytest.fixture
