@@ -1,3 +1,5 @@
+import copy
+
 from graph.graph import Graph
 from graph.edge import Edge
 
@@ -25,6 +27,7 @@ class RegularReduce:
             new_edges.append(edges_not_in_mcst)
         return Graph(edges=new_edges, sources=self.graph.get_sources(), players=self.graph.get_players())
     
+    # TESTED
     def get_edges_not_in_mcst(self) -> list[Edge]:
         mcst_edges_str = []
         for edge in self.mcst_edges:
@@ -37,7 +40,9 @@ class RegularReduce:
         return edges_not_in_mcst
 
     def find_path_in_mcst(self, edge:Edge):
-        pass
+        start_label = edge.get_start_node().get_label()
+        end_label = edge.get_end_node().get_label()
+        return self.get_path(start_label=start_label, end_label=end_label)
 
     # TESTED
     def get_max_cost_on_path(self, path:list[Edge]):
@@ -46,5 +51,31 @@ class RegularReduce:
             if edge.get_cost() > max_cost:
                 max_cost = edge.get_cost()
         return max_cost
+    
+    # TESTED
+    def get_path(self, start_label, end_label):
+        self.current_path = []
+        visited = set()
+        if self.depthFirstSearch(current_node=start_label, end_node=end_label, visited=visited):
+            return copy.deepcopy(self.current_path)
+
+    def depthFirstSearch(self, current_node, end_node, visited:set):
+        if current_node == end_node:
+            return True
+        
+        visited.add(current_node)
+
+        for edge in self.mcst_edges:
+            # Complicated way of checking whether an edge has an endpoint which is the current node and the other end point has not yet been visited
+            if edge.start_node.get_label() == current_node and edge.end_node.get_label() not in visited:
+                if self.depthFirstSearch(edge.end_node.get_label(), end_node, visited):
+                    self.current_path.append(edge)
+                    return True
+            if edge.end_node.get_label() == current_node and edge.start_node.get_label() not in visited:
+                if self.depthFirstSearch(edge.start_node.get_label(), end_node, visited):
+                    self.current_path.append(edge)
+                    return True
+        
+        return False
 
     # BOILERPLATE

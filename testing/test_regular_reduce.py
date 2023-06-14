@@ -103,4 +103,16 @@ def test_get_edges_not_in_mcst(graph:Graph, mcstEdges:list[Edge], edges_not_in_m
     edges_not_in_mcst_rr = rr.get_edges_not_in_mcst()
     for edge in edges_not_in_mcst_rr:
         assert edge.to_string() in edges_not_in_mcst_str
+
+def test_get_path_between_players(mcstEdges:list[Edge]):
+    rr = RegularReduce(mcst_edges=mcstEdges)
+    path = rr.get_path(2, 1)
+    assert path[0].to_string() == 'Node b is connected to 1 with cost of 3'
+    assert path[1].to_string() == 'Node b is connected to 3 with cost of 5'
+    assert path[2].to_string() == 'Node 2 is connected to 3 with cost of 6'
+
+def test_get_path_between_player_and_source(mcstEdges:list[Edge]):
+    rr = RegularReduce(mcst_edges=mcstEdges)
+    path = rr.get_path(3, 'a')
+    assert path[0].to_string() == 'Node a is connected to 3 with cost of 7'
     
