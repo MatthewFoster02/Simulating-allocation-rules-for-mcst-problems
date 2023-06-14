@@ -100,6 +100,9 @@ class CoopMethods:
                 edge_a_to_b = self.getEdgeBetweenSources()
                 all_edges = edges_to_a_players_want_a + edges_to_b_players_want_a + edges_to_b_players_want_b + edges_to_a_players_want_b
                 all_edges.append(edge_a_to_b)
+                for edge in all_edges:
+                    print(edge.to_string())
+                print('lol')
                 mcst_all_edges = MCST(Graph(all_edges, self.graph.get_sources(), self.graph.get_players()))
                 _, mcst_all_edges_cost = mcst_all_edges.kruskal()
                 coalition_cost_full = mcst_all_edges_cost
