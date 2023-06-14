@@ -4,6 +4,7 @@ from graph.graph import Graph
 from graph.node import Node
 from mcst import MCST
 from cooperative_gt import CoopMethods
+from path_checking_rule import PathRule
 
 # TESTED
 def get_random_source_sets(players:list[Node]):
@@ -64,6 +65,10 @@ def run():
     contradiction_counter = 0
     two_component_optimal_counter = 0
 
+    path_contradiction = 0
+    normal_contradiction = 0
+    normal_occurences = 0
+
     current_percentage = 0
     while limiter < limit:
         graph = Graph()
@@ -74,6 +79,7 @@ def run():
         source_a_set, source_b_set = get_random_source_sets(graph.get_players())
 
         mcst_instance = MCST(graph=graph, source_a_set=source_a_set, source_b_set=source_b_set)
+        mcst_edges, _ = mcst_instance.kruskal()
 
         if will_optimal_solution_have_2_components(mcst_instance, graph, source_a_set, source_b_set):
             two_component_optimal_counter += 1
@@ -84,14 +90,32 @@ def run():
 
         coalitions = coop.get_player_coalition_values(source_a_set, source_b_set)
 
+        # Get allocation using path rule
+        #pathRule = PathRule(graph=graph, mcst_edges=mcst_edges, source_a_set=source_a_set, source_b_set=source_b_set)
+        #solution = pathRule.run_rule()
+        #rule = 'path'
+        #if not solution:
+        #    allocation = pathRule.get_cost_allocation()
+        #else:
+        #    normal_occurences += 1
+        #    mcst_instance.kruskal(share_edge_costs=True)
+        #    allocation = mcst_instance.getCostAllocation()
+        #    print('here')
+        #    rule = 'original'
+        
         # Get allocation using kruskal with sharing TRUE
-        mcst_instance.kruskal(share_edge_costs=True)
-        allocation = mcst_instance.getCostAllocation()
+        #mcst_instance.kruskal()
+        #mcst_instance.prim()
+        #allocation = mcst_instance.getCostAllocation()
 
         if not coop.belongs_to_core(coalitions, allocation):
+            if rule == 'path':
+                path_contradiction += 1
+            else:
+                normal_contradiction += 1
             contradiction_counter += 1
             data = f"""
-CONTRADICTION on graph number {limiter}:\n
+CONTRADICTION on graph number {limiter} Rule: {rule}:\n
 Graph Edges:
 {graph.to_string()}
 Source A: {source_a_set} Source B: {source_b_set}
@@ -101,13 +125,6 @@ Allocation not in core of game...
 Sum of cost allocation and grand coalition cost: {sum(allocation)} != {list(coalitions.values())[-1]}\n\n"""
             with open('contradictions.txt', 'a') as file:
                 file.write(data)
-            # print('CONTRADICTION:')
-            # print(f'This is the graph:')
-            # print(graph.to_string())
-            # print(f'Source A: {source_a_set}. Source B: {source_b_set}.')
-            # print(f'Coalitions: {coalitions}')
-            # print(f'Allocation: {allocation}')
-            # print('Allocation not in core of game...')
 
         limiter += 1
         percent_complete = round((limiter/limit)*100)
@@ -116,5 +133,7 @@ Sum of cost allocation and grand coalition cost: {sum(allocation)} != {list(coal
             print(f'{current_percentage}% complete...')
 
     print('DONE')
-    print(f'\n{contradiction_counter}/100 CONTRADICTIONS')
+    print(f'\nOverall: {contradiction_counter}/{limit} CONTRADICTIONS')
+    print(f'\nPath: {path_contradiction}/{limit-normal_contradiction} CONTRADICTIONS')
+    print(f'\nNormal: {normal_contradiction}/{normal_contradiction} CONTRADICTIONS')
     print(f'{two_component_optimal_counter} times a randomly generated graph had 2 components in the optimal solution. {limiter+two_component_optimal_counter}')
