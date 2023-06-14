@@ -190,6 +190,21 @@ def test_allocation_not_in_core_3_players():
     allocation = [5, 5, 11]
     assert not coop.belongs_to_core(coalitions, allocation)
 
+def test_allocation_in_core_3_players_custom_irreducible():
+    coop = CoopMethods()
+    coalitions = {
+        '1': 10,
+        '2': 3,
+        '3': 2,
+        '12': 8,
+        '13': 5,
+        '23': 5,
+        '123': 8
+    }
+
+    allocation = [3.5, 3, 1.5]
+    assert coop.belongs_to_core(coalitions, allocation)
+
 def test_allocation_not_in_core_4_players():
     coop = CoopMethods()
     coalitions = {
