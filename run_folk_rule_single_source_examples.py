@@ -43,5 +43,3 @@ Allocation not in core of game...\n\n"""
     print('DONE!')
     
     print(f'\n{contradiction_counter}/{limit} CONTRADICTIONS')
-
-run()

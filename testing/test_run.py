@@ -265,21 +265,3 @@ def test_getting_subgraph_source_b_2_players(graph:Graph):
         subgraph_b_edges_str += edge1.to_string()
         expected_subgraph_edges_str += edge2.to_string()
     assert subgraph_b_edges_str == expected_subgraph_edges_str
-
-def test_run_a_4():
-    graph_a_coalitions = {'4': 20}
-    graph_b_coalitions = {'1': 4, '2': 20, '3': 12}
-    num = run_folk_rule_2_component_solutions.test_coalition_checker(graph_a_coalitions, graph_b_coalitions)
-    assert num == 0
-
-def test_run_b_4():
-    graph_a_coalitions = {'1': 4, '2': 20, '3': 12}
-    graph_b_coalitions = {'4': 20}
-    num = run_folk_rule_2_component_solutions.test_coalition_checker(graph_a_coalitions, graph_b_coalitions)
-    assert num == 1
-
-def test_run_neither_4():
-    graph_a_coalitions = {'3': 12, '4': 20}
-    graph_b_coalitions = {'1': 4, '2': 20}
-    num = run_folk_rule_2_component_solutions.test_coalition_checker(graph_a_coalitions, graph_b_coalitions)
-    assert num == 2

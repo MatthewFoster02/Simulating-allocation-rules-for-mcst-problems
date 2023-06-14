@@ -133,16 +133,3 @@ Graph B:
     print(f'\n{contradiction_counter_not_4}/{limit} CONTRADICTIONS')
     print(f'\n{graph_a_contradiction_counter}/{limit} SUBGRAPH A CONTRADICTIONS')
     print(f'\n{graph_b_contradiction_counter}/{limit} SUBGRAPH B CONTRADICTIONS')
-
-run()
-
-
-# def test_coalition_checker(graph_a_coalitions:dict, graph_b_coalitions:dict):
-#     # print(len(graph_a_coalitions))
-#     # print(list(graph_a_coalitions.keys()))
-#     if len(graph_a_coalitions) == 1 and '4' in list(graph_a_coalitions.keys()):
-#         return 0
-#     elif len(graph_b_coalitions) == 1 and '4' in list(graph_b_coalitions.keys()):
-#         return 1
-#     else:
-#         return 2
