@@ -8,7 +8,7 @@ class RegularReduce:
         self.graph = graph
         self.mcst_edges = mcst_edges
     
-    def reduce_graph(self):
+    def reduce_graph(self) -> Graph:
         # Get edges not in mcst
         # For each edge above -> check path between two endpoints
         #       - Update edge cost to max weight on path from start node to source node (get the max weight on path)
@@ -24,7 +24,7 @@ class RegularReduce:
         for edge in self.mcst_edges:
             new_edges.append(edge)
         for edge in edges_not_in_mcst:
-            new_edges.append(edges_not_in_mcst)
+            new_edges.append(edge)
         return Graph(edges=new_edges, sources=self.graph.get_sources(), players=self.graph.get_players())
     
     # TESTED

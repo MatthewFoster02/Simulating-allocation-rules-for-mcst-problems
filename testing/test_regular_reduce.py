@@ -63,6 +63,28 @@ def edges_not_in_mcst():
     not_mcst_edges.append(Edge(node_player_1, node_player_3, 15))
     return not_mcst_edges
 
+@pytest.fixture
+def reducedEdges():
+    node_source_a = Node(type='source', label='a')
+    node_source_b = Node(type='source', label='b')
+    node_player_1 = Node(label=1)
+    node_player_2 = Node(label=2)
+    node_player_3 = Node(label=3)
+    
+    edges = []
+    edges.append(Edge(node_source_a, node_source_b, 7))
+    edges.append(Edge(node_source_a, node_player_1, 7))
+    edges.append(Edge(node_source_a, node_player_2, 7))
+    edges.append(Edge(node_source_a, node_player_3, 7))
+    edges.append(Edge(node_source_b, node_player_1, 3))
+    edges.append(Edge(node_source_b, node_player_2, 6))
+    edges.append(Edge(node_source_b, node_player_3, 5))
+    edges.append(Edge(node_player_1, node_player_2, 6))
+    edges.append(Edge(node_player_1, node_player_3, 5))
+    edges.append(Edge(node_player_2, node_player_3, 6))
+
+    return edges
+
 def test_get_max_cost_on_path_one_max():
     rr = RegularReduce()
     path = []
@@ -131,3 +153,24 @@ def test_find_path_in_mcst(mcstEdges:list[Edge]):
     assert the_path[0].to_string() == 'Node 2 is connected to 3 with cost of 6'
     assert the_path[1].to_string() == 'Node b is connected to 3 with cost of 5'
     assert the_path[2].to_string() == 'Node b is connected to 1 with cost of 3'
+
+def test_complete_reduce(graph:Graph, mcstEdges:list[Edge], reducedEdges:list[Node]):
+    reducedEdgesStr = []
+    for edge in reducedEdges:
+        reducedEdgesStr.append(edge.to_string())
+    
+    rr = RegularReduce(graph=graph, mcst_edges=mcstEdges)
+    reduced_graph = rr.reduce_graph()
+
+    reduced_sources = reduced_graph.get_sources()
+    reduced_players = reduced_graph.get_players()
+    
+    assert reduced_sources[0].to_string() == 'Label: a Type: source'
+    assert reduced_sources[1].to_string() == 'Label: b Type: source'
+    assert reduced_players[0].to_string() == 'Label: 1 Type: player'
+    assert reduced_players[1].to_string() == 'Label: 2 Type: player'
+    assert reduced_players[2].to_string() == 'Label: 3 Type: player'
+
+    reduced_edges = reduced_graph.get_edges()
+    for edge in reduced_edges:
+        assert edge.to_string() in reducedEdgesStr
