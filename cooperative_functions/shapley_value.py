@@ -19,6 +19,7 @@ class ShapleyValue:
         shapley_value = self.average_values(values)
         return shapley_value
     
+    # TESTED
     def get_all_orderings(self):
         numbers = ''.join(str(i) for i in range(1, self.num_players + 1))
         orderings = [''.join(p) for p in itertools.permutations(numbers)]
