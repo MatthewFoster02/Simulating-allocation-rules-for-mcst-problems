@@ -39,6 +39,7 @@ class RegularReduce:
                 edges_not_in_mcst.append(edge)
         return edges_not_in_mcst
 
+    # TESTED
     def find_path_in_mcst(self, edge:Edge):
         start_label = edge.get_start_node().get_label()
         end_label = edge.get_end_node().get_label()
