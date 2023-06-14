@@ -4,7 +4,7 @@ import numpy as np
 from graph.node import Node
 from graph.edge import Edge
 from graph.graph import Graph
-from mcst import MCST
+from first_rule_and_prims.mcst import MCST
 
 class CoopMethods:
     def __init__(self, graph:Graph = None):

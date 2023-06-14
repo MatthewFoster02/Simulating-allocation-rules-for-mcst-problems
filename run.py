@@ -2,7 +2,7 @@ import random
 
 from graph.graph import Graph
 from graph.node import Node
-from mcst import MCST
+from first_rule_and_prims.mcst import MCST
 from cooperative_functions.cooperative_gt import CoopMethods
 from path_checking_rule import PathRule
 

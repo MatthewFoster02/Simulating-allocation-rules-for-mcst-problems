@@ -4,7 +4,7 @@ from graph.node import Node
 from graph.edge import Edge
 from graph.graph import Graph
 from classical_folk_rule.folk_rule import FolkRule
-from mcst import MCST
+from first_rule_and_prims.mcst import MCST
 
 @pytest.fixture
 def graph_3_players():

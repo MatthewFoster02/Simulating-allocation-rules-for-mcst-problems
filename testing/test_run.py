@@ -5,7 +5,7 @@ import run_folk_rule_2_component_solutions
 from graph.node import Node
 from graph.edge import Edge
 from graph.graph import Graph
-from mcst import MCST
+from first_rule_and_prims.mcst import MCST
 
 @pytest.fixture
 def graph():
