@@ -99,7 +99,7 @@ Coalitions: {coalitions}
 Allocation: {allocation}
 Allocation not in core of game...
 Sum of cost allocation and grand coalition cost: {sum(allocation)} != {list(coalitions.values())[-1]}\n\n"""
-            with open('contradictions_new_sharing.txt', 'a') as file:
+            with open('contradictions.txt', 'a') as file:
                 file.write(data)
             # print('CONTRADICTION:')
             # print(f'This is the graph:')
