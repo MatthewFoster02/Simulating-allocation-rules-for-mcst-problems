@@ -39,6 +39,7 @@ class RegularReduce:
     def find_path_in_mcst(self, edge:Edge):
         pass
 
+    # TESTED
     def get_max_cost_on_path(self, path:list[Edge]):
         max_cost = -1 # All edges have cost > 0 so -1 is safe lowerbound
         for edge in path:
