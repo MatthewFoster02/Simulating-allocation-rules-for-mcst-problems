@@ -16,7 +16,7 @@ class ShapleyValue:
         for order in orderings:
             values[order] = self.get_values(order)
         
-        shapley_value = self.average_values(values)
+        shapley_value = self.average_values(list(values.values()))
         return shapley_value
     
     # TESTED
@@ -28,5 +28,8 @@ class ShapleyValue:
     def get_values(self, order:str):
         pass
 
-    def average_values(self, values:dict):
-        pass
+    
+    #TESTED
+    def average_values(self, values:list):
+        averages = [sum(items) / len(items) for items in zip(*values)]
+        return averages
