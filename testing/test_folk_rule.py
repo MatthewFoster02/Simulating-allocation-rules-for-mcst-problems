@@ -4,7 +4,6 @@ from graph.node import Node
 from graph.edge import Edge
 from graph.graph import Graph
 from folk_rule import FolkRule
-from cooperative_gt import CoopMethods
 from mcst import MCST
 
 @pytest.fixture
