@@ -85,7 +85,8 @@ def run():
         coalitions = coop.get_player_coalition_values(source_a_set, source_b_set)
 
         # Get allocation using kruskal with sharing TRUE
-        mcst_instance.kruskal(share_edge_costs=True)
+        mcst_instance.kruskal()
+        mcst_instance.prim()
         allocation = mcst_instance.getCostAllocation()
 
         if not coop.belongs_to_core(coalitions, allocation):
@@ -116,5 +117,5 @@ Sum of cost allocation and grand coalition cost: {sum(allocation)} != {list(coal
             print(f'{current_percentage}% complete...')
 
     print('DONE')
-    print(f'\n{contradiction_counter}/100 CONTRADICTIONS')
+    print(f'\n{contradiction_counter}/{limit} CONTRADICTIONS')
     print(f'{two_component_optimal_counter} times a randomly generated graph had 2 components in the optimal solution. {limiter+two_component_optimal_counter}')
