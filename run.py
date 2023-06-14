@@ -59,15 +59,12 @@ def will_optimal_solution_have_2_components(mcst:MCST, graph:Graph, source_a_set
     
 
 def run():
+    type_rule = int(input('Enter rule number:\n1. Original\n2. Prims\n3. Path\n'))
     limiter = 0
     limit = 1000000
 
     contradiction_counter = 0
     two_component_optimal_counter = 0
-
-    path_contradiction = 0
-    normal_contradiction = 0
-    normal_occurences = 0
 
     current_percentage = 0
     while limiter < limit:
@@ -91,31 +88,31 @@ def run():
         coalitions = coop.get_player_coalition_values(source_a_set, source_b_set)
 
         # Get allocation using path rule
-        #pathRule = PathRule(graph=graph, mcst_edges=mcst_edges, source_a_set=source_a_set, source_b_set=source_b_set)
-        #solution = pathRule.run_rule()
-        #rule = 'path'
-        #if not solution:
-        #    allocation = pathRule.get_cost_allocation()
-        #else:
-        #    normal_occurences += 1
-        #    mcst_instance.kruskal(share_edge_costs=True)
-        #    allocation = mcst_instance.getCostAllocation()
-        #    print('here')
-        #    rule = 'original'
+        if(type_rule == 3):
+            pathRule = PathRule(graph=graph, mcst_edges=mcst_edges, source_a_set=source_a_set, source_b_set=source_b_set)
+            solution = pathRule.run_rule()
+            if not solution:
+                allocation = pathRule.get_cost_allocation()
+            else:
+                type_rule = 1
+                
         
-        # Get allocation using kruskal with sharing TRUE
-        #mcst_instance.kruskal()
-        #mcst_instance.prim()
-        #allocation = mcst_instance.getCostAllocation()
+        # Get allocation using kruskal and prim.
+        if(type_rule == 2):
+            mcst_instance.kruskal()
+            mcst_instance.prim()
+            allocation = mcst_instance.getCostAllocation()
+
+        # Original
+        if(type_rule == 1):
+            mcst_instance.kruskal()
+            mcst_instance.kruskal(share_edge_costs=True)
+            allocation = mcst_instance.getCostAllocation()
 
         if not coop.belongs_to_core(coalitions, allocation):
-            if rule == 'path':
-                path_contradiction += 1
-            else:
-                normal_contradiction += 1
             contradiction_counter += 1
             data = f"""
-CONTRADICTION on graph number {limiter} Rule: {rule}:\n
+CONTRADICTION on graph number {limiter}:\n
 Graph Edges:
 {graph.to_string()}
 Source A: {source_a_set} Source B: {source_b_set}
@@ -134,6 +131,4 @@ Sum of cost allocation and grand coalition cost: {sum(allocation)} != {list(coal
 
     print('DONE')
     print(f'\nOverall: {contradiction_counter}/{limit} CONTRADICTIONS')
-    print(f'\nPath: {path_contradiction}/{limit-normal_contradiction} CONTRADICTIONS')
-    print(f'\nNormal: {normal_contradiction}/{normal_contradiction} CONTRADICTIONS')
     print(f'{two_component_optimal_counter} times a randomly generated graph had 2 components in the optimal solution. {limiter+two_component_optimal_counter}')
