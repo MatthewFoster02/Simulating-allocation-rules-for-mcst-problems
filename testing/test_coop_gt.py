@@ -3,8 +3,7 @@ import pytest
 from graph.node import Node
 from graph.edge import Edge
 from graph.graph import Graph
-from cooperative_gt import CoopMethods
-from mcst import MCST
+from cooperative_functions.cooperative_gt import CoopMethods
 
 @pytest.fixture
 def graph():

@@ -2,7 +2,7 @@ import random
 
 from graph.graph import Graph
 from mcst import MCST
-from cooperative_gt import CoopMethods
+from cooperative_functions.cooperative_gt import CoopMethods
 
 def run():
     limit = 100

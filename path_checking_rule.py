@@ -2,7 +2,6 @@ import copy
 
 from graph.graph import Graph
 from graph.edge import Edge
-from cooperative_gt import CoopMethods
 
 class PathRule:
     def __init__(self, graph:Graph=None, mcst_edges:list[Edge]=None, source_a_set:set=None, source_b_set:set=None):
@@ -152,9 +151,6 @@ class PathRule:
         for player in self.graph.get_players():
             self.player_path_cost[str(player.get_label())] = self.get_path_cost(self.player_path_edges[str(player.get_label())])
 
-# MAINTAIN LIST OF EDGES REMOVE WHEN NECESSARY
-
-
     # BOILERPLATE
     def get_individual_cost(self):
         return self.individual_cost
@@ -176,5 +172,3 @@ class PathRule:
 
     def get_cost_allocation(self):
         return self.cost_allocation
-
-

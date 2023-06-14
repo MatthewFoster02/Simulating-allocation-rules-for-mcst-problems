@@ -3,7 +3,7 @@ import random
 from graph.node import Node
 from graph.graph import Graph
 from mcst import MCST
-from cooperative_gt import CoopMethods
+from cooperative_functions.cooperative_gt import CoopMethods
 from run import will_optimal_solution_have_2_components, get_random_source_sets
 
 # TESTED
