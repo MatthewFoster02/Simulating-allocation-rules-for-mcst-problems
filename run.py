@@ -4,7 +4,7 @@ from graph.graph import Graph
 from graph.node import Node
 from first_rule_and_prims.mcst import MCST
 from cooperative_functions.cooperative_gt import CoopMethods
-from path_checking_rule import PathRule
+from path_rule.path_checking_rule import PathRule
 
 # TESTED
 def get_random_source_sets(players:list[Node]):
