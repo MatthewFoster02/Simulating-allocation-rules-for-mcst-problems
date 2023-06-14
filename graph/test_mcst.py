@@ -32,6 +32,32 @@ def graph():
     return MCST(graph=graph)
 
 @pytest.fixture
+def graph_prim_test():
+    node_source_a = Node(type='source', label='a')
+    node_source_b = Node(type='source', label='b')
+    node_player_1 = Node(label=1) # b
+    node_player_2 = Node(label=2) # a
+    node_player_3 = Node(label=3) # a
+    
+    edges = []
+    edges.append(Edge(node_source_a, node_source_b, 2)) # 0 1 1
+    edges.append(Edge(node_source_a, node_player_1, 5))
+    edges.append(Edge(node_source_a, node_player_2, 8))
+    edges.append(Edge(node_source_a, node_player_3, 17))
+    edges.append(Edge(node_source_b, node_player_1, 13))
+    edges.append(Edge(node_player_2, node_source_b, 4)) # 4/3 4/3 4/3
+    edges.append(Edge(node_source_b, node_player_3, 5))
+    edges.append(Edge(node_player_1, node_player_2, 13))
+    edges.append(Edge(node_player_1, node_player_3, 4)) # 4 0 0
+    edges.append(Edge(node_player_2, node_player_3, 3)) # 0 0 3
+
+    sources = [node_source_a, node_source_b]
+    players = [node_player_1, node_player_2, node_player_3]
+
+    graph = Graph(edges=edges, sources=sources, players=players)
+    return MCST(graph=graph)
+
+@pytest.fixture
 def sortedEdges():
     node_source_a = Node(type='source', label='a')
     node_source_b = Node(type='source', label='b')
@@ -61,10 +87,10 @@ def mcstEdges():
     node_player_3 = Node(label=3)
 
     mcst_edges = []
-    mcst_edges.append(Edge(node_source_b, node_player_1, 3))
-    mcst_edges.append(Edge(node_source_b, node_player_3, 5))
-    mcst_edges.append(Edge(node_player_2, node_player_3, 6))
-    mcst_edges.append(Edge(node_source_a, node_player_3, 7))
+    mcst_edges.append(Edge(node_source_b, node_player_1, 3)) # 3 0 0
+    mcst_edges.append(Edge(node_source_b, node_player_3, 5)) # 2.5 2.5 0
+    mcst_edges.append(Edge(node_player_2, node_player_3, 6)) # 0 6 0
+    mcst_edges.append(Edge(node_source_a, node_player_3, 7)) # 0 0 7
     return mcst_edges
 
 def test_sort_edges_by_cost(graph:MCST, sortedEdges:list[Edge]):
@@ -445,3 +471,43 @@ def test_kruskal_with_sharing(graph:MCST):
 def test_generate_sets(graph:MCST):
     sets = graph.generate_sets()
     assert sets == [{'a'}, {'b'}, {1}, {2}, {3}]
+
+
+# NEWER TESTS
+def test_player_wants_source_a(graph:MCST):
+    graph.setSourceASet({1, 3})
+    graph.setSourceBSet({2})
+    assert graph.playerWantsSource('a', 3)
+
+def test_player_wants_source_b(graph:MCST):
+    graph.setSourceASet({1, 3})
+    graph.setSourceBSet({2})
+    assert graph.playerWantsSource('b', 2)
+
+def test_player_doesnt_want_source_a(graph:MCST):
+    graph.setSourceASet({1, 3})
+    graph.setSourceBSet({2})
+    assert not graph.playerWantsSource('a', 2)
+
+def test_player_doesnt_want_source_b(graph:MCST):
+    graph.setSourceASet({1, 3})
+    graph.setSourceBSet({2})
+    assert not graph.playerWantsSource('b', 1)
+
+def test_prim(graph:MCST):
+    graph.setSourceASet({1, 3})
+    graph.setSourceBSet({2})
+    graph.kruskal()
+    graph.prim()
+    allocation = graph.getCostAllocation()
+    assert allocation == [5.5, 8.5, 7]
+
+def test_prim_other(graph_prim_test:MCST):
+    graph_prim_test.setSourceASet({2, 3})
+    graph_prim_test.setSourceBSet({1})
+    graph_prim_test.kruskal()
+    graph_prim_test.prim()
+    allocation = graph_prim_test.getCostAllocation()
+    assert 5.3 < allocation[0] < 5.4
+    assert 2.3 < allocation[1] < 2.4
+    assert 5.3 < allocation[2] < 5.4

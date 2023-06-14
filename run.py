@@ -91,18 +91,22 @@ def run():
         coalitions = coop.get_player_coalition_values(source_a_set, source_b_set)
 
         # Get allocation using path rule
-        pathRule = PathRule(graph=graph, mcst_edges=mcst_edges, source_a_set=source_a_set, source_b_set=source_b_set)
-        solution = pathRule.run_rule()
-        rule = 'path'
-        if not solution:
-            allocation = pathRule.get_cost_allocation()
-        else:
-            normal_occurences += 1
-            mcst_instance.kruskal(share_edge_costs=True)
-            allocation = mcst_instance.getCostAllocation()
-            print('here')
-            rule = 'original'
+        #pathRule = PathRule(graph=graph, mcst_edges=mcst_edges, source_a_set=source_a_set, source_b_set=source_b_set)
+        #solution = pathRule.run_rule()
+        #rule = 'path'
+        #if not solution:
+        #    allocation = pathRule.get_cost_allocation()
+        #else:
+        #    normal_occurences += 1
+        #    mcst_instance.kruskal(share_edge_costs=True)
+        #    allocation = mcst_instance.getCostAllocation()
+        #    print('here')
+        #    rule = 'original'
         
+        # Get allocation using kruskal with sharing TRUE
+        #mcst_instance.kruskal()
+        #mcst_instance.prim()
+        #allocation = mcst_instance.getCostAllocation()
 
         if not coop.belongs_to_core(coalitions, allocation):
             if rule == 'path':
@@ -120,6 +124,7 @@ Allocation: {allocation}
 Allocation not in core of game...
 Sum of cost allocation and grand coalition cost: {sum(allocation)} != {list(coalitions.values())[-1]}\n\n"""
             with open('path_contradictions.txt', 'a') as file:
+            with open('contradictions.txt', 'a') as file:
                 file.write(data)
 
         limiter += 1
@@ -132,3 +137,4 @@ Sum of cost allocation and grand coalition cost: {sum(allocation)} != {list(coal
     print(f'\nOverall: {contradiction_counter}/{limit} CONTRADICTIONS')
     print(f'\nPath: {path_contradiction}/{limit-normal_contradiction} CONTRADICTIONS')
     print(f'\nNormal: {normal_contradiction}/{normal_contradiction} CONTRADICTIONS')
+    print(f'{two_component_optimal_counter} times a randomly generated graph had 2 components in the optimal solution. {limiter+two_component_optimal_counter}')
