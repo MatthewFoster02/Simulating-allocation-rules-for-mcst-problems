@@ -2,6 +2,7 @@ import copy
 
 from graph.graph import Graph
 from graph.edge import Edge
+from folk_rule import FolkRule
 
 class MCST:
     def __init__(self, graph:Graph, source_a_set:set = set(), source_b_set:set = set()):
@@ -27,7 +28,9 @@ class MCST:
         self.edges.sort(key=lambda edge: edge.get_cost())
     
     # TESTED
-    def kruskal(self, share_edge_costs:bool = False):
+    def kruskal(self, share_edge_costs:bool = False, use_classical_folk_rule:bool = False):
+        if use_classical_folk_rule:
+            folkRule = FolkRule(source=self.sources[0], players=self.players)
         # ensure sets are reset
         self.sets = self.generate_sets()
         total_cost = 0
@@ -43,10 +46,15 @@ class MCST:
             if share_edge_costs:
                 self.share_cost_of_edge(edge)
             
+            if use_classical_folk_rule:
+                folkRule.share_edge_cost(edge=edge, current_components=self.getSets())
+            
             # Update state
             node_u_set, node_v_set = self.find_sets(edge.get_start_node().get_label(), edge.get_end_node().get_label())
             self.join_sets(node_u_set, node_v_set)
         
+        if use_classical_folk_rule:
+            self.cost_allocation = folkRule.get_cost_allocation()
         self.mcst = mcst_edges
         self.mcst_cost = total_cost
         return mcst_edges, total_cost
