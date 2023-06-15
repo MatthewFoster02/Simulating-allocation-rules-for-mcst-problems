@@ -1,6 +1,52 @@
 import pytest
 
+from graph.graph import Graph
+from graph.edge import Edge
+from graph.node import Node
 from cooperative_functions.shapley_value import ShapleyValue
+from cooperative_functions.cooperative_gt import CoopMethods
+from irreducibililty.regular_reduce import RegularReduce
+
+@pytest.fixture
+def graph():
+    node_source_a = Node(type='source', label='a')
+    node_source_b = Node(type='source', label='b')
+    node_player_1 = Node(label=1)
+    node_player_2 = Node(label=2)
+    node_player_3 = Node(label=3)
+    
+    edges = []
+    edges.append(Edge(node_source_a, node_source_b, 12))
+    edges.append(Edge(node_source_a, node_player_1, 11))
+    edges.append(Edge(node_source_a, node_player_2, 8))
+    edges.append(Edge(node_source_a, node_player_3, 7))
+    edges.append(Edge(node_source_b, node_player_1, 3))
+    edges.append(Edge(node_source_b, node_player_2, 9))
+    edges.append(Edge(node_source_b, node_player_3, 5))
+    edges.append(Edge(node_player_1, node_player_2, 13))
+    edges.append(Edge(node_player_1, node_player_3, 15))
+    edges.append(Edge(node_player_2, node_player_3, 6))
+
+    sources = [node_source_a, node_source_b]
+    players = [node_player_1, node_player_2, node_player_3]
+
+    graph = Graph(edges=edges, sources=sources, players=players)
+    return graph
+
+@pytest.fixture
+def mcstEdges():
+    node_source_a = Node(type='source', label='a')
+    node_source_b = Node(type='source', label='b')
+    node_player_1 = Node(label=1)
+    node_player_2 = Node(label=2)
+    node_player_3 = Node(label=3)
+
+    mcst_edges = []
+    mcst_edges.append(Edge(node_source_b, node_player_1, 3))
+    mcst_edges.append(Edge(node_source_b, node_player_3, 5))
+    mcst_edges.append(Edge(node_player_2, node_player_3, 6))
+    mcst_edges.append(Edge(node_source_a, node_player_3, 7))
+    return mcst_edges
 
 @pytest.fixture
 def coalitions_3_players():
@@ -83,3 +129,26 @@ def test_sort_order_different():
 def test_sort_order_in_reverse():
     sv = ShapleyValue()
     assert sv.sort_order('4321') == '1234'
+
+
+# Testing reducing graph and shapley value
+def test_reducing_and_shapley(graph:Graph, mcstEdges:list[Edge]):
+    rr = RegularReduce(graph=graph, mcst_edges=mcstEdges)
+    reduced_graph = rr.reduce_graph()
+
+    coop = CoopMethods(graph=reduced_graph)
+    coalitions = coop.get_player_coalition_values(source_a_set={1, 2}, source_b_set={2, 3})
+
+    assert coalitions == {
+        '1': 7,
+        '2': 13,
+        '3': 5,
+        '12': 16,
+        '13': 12,
+        '23': 18,
+        '123': 21
+    }
+
+    sv = ShapleyValue(coalitions=coalitions, num_players=3)
+    shapley_value = sv.get_shapley_value()
+    assert shapley_value == [5, 11, 5]

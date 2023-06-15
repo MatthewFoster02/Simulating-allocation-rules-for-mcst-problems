@@ -18,10 +18,14 @@ class CoopMethods:
         self.player_labels = []
         self.coalitions = {}
         for player in self.graph.get_players():
+            print(player.get_label())
+            coalition_cost = 0
             if player.get_label() in source_a_set:
-                self.coalitions[str(player.get_label())] = self.getEdgeWithEndpoints(player.get_label(), 'a').get_cost()
-            elif player.get_label() in source_b_set:
-                self.coalitions[str(player.get_label())] = self.getEdgeWithEndpoints(player.get_label(), 'b').get_cost()
+                coalition_cost += self.getEdgeWithEndpoints(player.get_label(), 'a').get_cost()
+            
+            if player.get_label() in source_b_set:
+                coalition_cost += self.getEdgeWithEndpoints(player.get_label(), 'b').get_cost()
+            self.coalitions[str(player.get_label())] = coalition_cost
             self.player_labels.append(player.get_label())
 
         # Multi player coalitions
@@ -72,7 +76,8 @@ class CoopMethods:
                 if player_label in self.source_a_set:
                     player_to_a = True
                     nodes_to_a.append(player_label)
-                elif player_label in self.source_b_set:
+                
+                if player_label in self.source_b_set:
                     player_to_b = True
                     nodes_to_b.append(player_label)
             coalition_cost = 0
