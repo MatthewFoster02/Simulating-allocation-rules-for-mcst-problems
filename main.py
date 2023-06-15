@@ -1,3 +1,3 @@
-import run
+import run_shapley_of_irreducible
 
-run.run()
+run_shapley_of_irreducible.run()

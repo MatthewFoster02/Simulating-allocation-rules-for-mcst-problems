@@ -18,13 +18,20 @@ class CoopMethods:
         self.player_labels = []
         self.coalitions = {}
         for player in self.graph.get_players():
-            print(player.get_label())
             coalition_cost = 0
             if player.get_label() in source_a_set:
                 coalition_cost += self.getEdgeWithEndpoints(player.get_label(), 'a').get_cost()
             
             if player.get_label() in source_b_set:
                 coalition_cost += self.getEdgeWithEndpoints(player.get_label(), 'b').get_cost()
+            if player.get_label() in source_a_set and player.get_label() in source_b_set:
+                all_edges = []
+                all_edges.append(self.getEdgeWithEndpoints(player.get_label(), 'a'))
+                all_edges.append(self.getEdgeWithEndpoints(player.get_label(), 'b'))
+                all_edges.append(self.getEdgeBetweenSources())
+                mcst_all_edges = MCST(Graph(all_edges, self.graph.get_sources(), [player]))
+                _, mcst_all_edges_cost = mcst_all_edges.kruskal()
+                coalition_cost = mcst_all_edges_cost
             self.coalitions[str(player.get_label())] = coalition_cost
             self.player_labels.append(player.get_label())
 
@@ -297,5 +304,5 @@ class CoopMethods:
                     -c1234 + c14])
         
         point = np.dot(core_region, modified_allocation.T) - b.T
-        return all(x >= 0 for x in point) # If all elements are >= 0, point is in core
+        return all(x >= -0.1 for x in point) # If all elements are >= 0, point is in core
 

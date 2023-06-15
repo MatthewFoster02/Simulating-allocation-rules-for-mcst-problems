@@ -58,6 +58,32 @@ def graph_thesis():
     return graph
 
 @pytest.fixture
+def graph_contradiction():
+    node_source_a = Node(type='source', label='a')
+    node_source_b = Node(type='source', label='b')
+    node_player_1 = Node(label=1)
+    node_player_2 = Node(label=2)
+    node_player_3 = Node(label=3)
+    
+    edges = []
+    edges.append(Edge(node_source_a, node_source_b, 2))
+    edges.append(Edge(node_source_a, node_player_1, 14))
+    edges.append(Edge(node_source_a, node_player_2, 8))
+    edges.append(Edge(node_source_a, node_player_3, 7))
+    edges.append(Edge(node_source_b, node_player_1, 3))
+    edges.append(Edge(node_source_b, node_player_2, 18))
+    edges.append(Edge(node_source_b, node_player_3, 3))
+    edges.append(Edge(node_player_1, node_player_2, 9))
+    edges.append(Edge(node_player_1, node_player_3, 12))
+    edges.append(Edge(node_player_2, node_player_3, 11))
+
+    sources = [node_source_a, node_source_b]
+    players = [node_player_1, node_player_2, node_player_3]
+
+    graph = Graph(edges=edges, sources=sources, players=players)
+    return graph
+
+@pytest.fixture
 def graph4():
     node_source_a = Node(type='source', label='a')
     node_source_b = Node(type='source', label='b')
@@ -182,6 +208,21 @@ def test_coalition_values_3_players(graph:Graph):
         '13': 15,
         '23': 11,
         '123': 21
+    }
+
+def test_coalition_values_3_players_contra(graph_contradiction:Graph):
+    coop = CoopMethods(graph_contradiction)
+    source_set_a = {2, 3}
+    source_set_b = {1, 3}
+    coaltitions = coop.get_player_coalition_values(source_set_a, source_set_b)
+    assert coaltitions == {
+        '1': 3,
+        '2': 8,
+        '3': 5,
+        '12': 11,
+        '13': 8,
+        '23': 13,
+        '123': 16
     }
 
 def test_coalition_values_3_players_thesis(graph_thesis:Graph):
@@ -376,3 +417,12 @@ def test_allocation_in_core_3_players_thesis():
 
     allocation = [4, 3, 3]
     assert coop.belongs_to_core(coalitions, allocation)
+
+def test_allocation_breaking():
+    coop = CoopMethods()
+    coalitions = {
+        '1': 16, '2': 12, '3': 9, '4': 17, '12': 20, '13': 20, '14': 23, '23': 10, '24': 27, '34': 26, '123': 14, '124': 27, '134': 27, '234': 25, '1234': 21
+    }
+
+    allocation = [8.333333333333334, 2.8333333333333335, 2.8333333333333335, 7.0]
+    assert coop.belongs_to_core(coalitions=coalitions, allocation=allocation)

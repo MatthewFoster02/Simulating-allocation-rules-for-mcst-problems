@@ -1,0 +1,138 @@
+
+CONTRADICTION on graph number 458:
+
+Graph Edges:
+Node 1 is connected to 2 with cost of 1
+Node 1 is connected to 3 with cost of 1
+Node b is connected to 2 with cost of 2
+Node 2 is connected to 3 with cost of 2
+Node 3 is connected to 4 with cost of 4
+Node b is connected to 1 with cost of 5
+Node b is connected to 4 with cost of 6
+Node a is connected to 2 with cost of 9
+Node 1 is connected to 4 with cost of 9
+Node a is connected to 3 with cost of 13
+Node a is connected to b with cost of 14
+Node a is connected to 4 with cost of 14
+Node b is connected to 3 with cost of 15
+Node 2 is connected to 4 with cost of 17
+Node a is connected to 1 with cost of 19
+
+Source A: {2} Source B: {1, 2, 3, 4}
+Coalitions: {'1': 5, '2': 11, '3': 15, '4': 6, '12': 12, '13': 6, '14': 11, '23': 13, '24': 17, '34': 10, '123': 13, '124': 18, '134': 10, '234': 17, '1234': 17}
+Coalitions (Reduced): {'1': 2, '2': 11, '3': 2, '4': 4, '12': 12, '13': 3, '14': 6, '23': 12, '24': 15, '34': 6, '123': 13, '124': 16, '134': 7, '234': 16, '1234': 17}
+Allocation: [1.3333333333333333, 10.333333333333334, 1.3333333333333333, 4.0]
+
+
+Reduced Graph:
+Node 1 is connected to 2 with cost of 1
+Node 1 is connected to 3 with cost of 1
+Node 2 is connected to 3 with cost of 1
+Node b is connected to 2 with cost of 2
+Node b is connected to 1 with cost of 2
+Node b is connected to 3 with cost of 2
+Node 3 is connected to 4 with cost of 4
+Node b is connected to 4 with cost of 4
+Node 1 is connected to 4 with cost of 4
+Node 2 is connected to 4 with cost of 4
+Node a is connected to 2 with cost of 9
+Node a is connected to 3 with cost of 9
+Node a is connected to b with cost of 9
+Node a is connected to 4 with cost of 9
+Node a is connected to 1 with cost of 9
+
+Allocation not in core of game...
+Sum of cost allocation and grand coalition cost: 17.0 != 17
+
+
+CONTRADICTION on graph number 4170:
+
+Graph Edges:
+Node 1 is connected to 3 with cost of 1
+Node b is connected to 1 with cost of 2
+Node a is connected to 1 with cost of 3
+Node 1 is connected to 4 with cost of 3
+Node a is connected to b with cost of 4
+Node a is connected to 3 with cost of 4
+Node 3 is connected to 4 with cost of 5
+Node 1 is connected to 2 with cost of 9
+Node a is connected to 4 with cost of 12
+Node b is connected to 2 with cost of 12
+Node b is connected to 4 with cost of 15
+Node a is connected to 2 with cost of 16
+Node b is connected to 3 with cost of 17
+Node 2 is connected to 4 with cost of 18
+Node 2 is connected to 3 with cost of 20
+
+Source A: {1, 2, 3, 4} Source B: {2}
+Coalitions: {'1': 3, '2': 16, '3': 4, '4': 12, '12': 14, '13': 4, '14': 6, '23': 20, '24': 28, '34': 9, '123': 15, '124': 17, '134': 7, '234': 25, '1234': 18}
+Coalitions (Reduced): {'1': 3, '2': 12, '3': 3, '4': 3, '12': 14, '13': 4, '14': 6, '23': 14, '24': 15, '34': 6, '123': 15, '124': 17, '134': 7, '234': 17, '1234': 18}
+Allocation: [1.8333333333333333, 11.333333333333334, 1.8333333333333333, 3.0]
+
+
+Reduced Graph:
+Node 1 is connected to 3 with cost of 1
+Node b is connected to 1 with cost of 2
+Node b is connected to 3 with cost of 2
+Node a is connected to 1 with cost of 3
+Node 1 is connected to 4 with cost of 3
+Node a is connected to b with cost of 3
+Node a is connected to 3 with cost of 3
+Node 3 is connected to 4 with cost of 3
+Node a is connected to 4 with cost of 3
+Node b is connected to 4 with cost of 3
+Node 1 is connected to 2 with cost of 9
+Node b is connected to 2 with cost of 9
+Node a is connected to 2 with cost of 9
+Node 2 is connected to 4 with cost of 9
+Node 2 is connected to 3 with cost of 9
+
+Allocation not in core of game...
+Sum of cost allocation and grand coalition cost: 18.0 != 18
+
+
+CONTRADICTION on graph number 5668:
+
+Graph Edges:
+Node 2 is connected to 3 with cost of 1
+Node a is connected to 3 with cost of 4
+Node 1 is connected to 2 with cost of 4
+Node a is connected to b with cost of 5
+Node a is connected to 4 with cost of 7
+Node b is connected to 3 with cost of 9
+Node a is connected to 1 with cost of 11
+Node a is connected to 2 with cost of 11
+Node b is connected to 2 with cost of 12
+Node 1 is connected to 4 with cost of 13
+Node 2 is connected to 4 with cost of 15
+Node b is connected to 4 with cost of 17
+Node 1 is connected to 3 with cost of 18
+Node 3 is connected to 4 with cost of 19
+Node b is connected to 1 with cost of 20
+
+Source A: {1} Source B: {1, 2, 3, 4}
+Coalitions: {'1': 16, '2': 12, '3': 9, '4': 17, '12': 20, '13': 20, '14': 23, '23': 10, '24': 27, '34': 26, '123': 14, '124': 27, '134': 27, '234': 25, '1234': 21}
+Coalitions (Reduced): {'1': 9, '2': 5, '3': 5, '4': 7, '12': 13, '13': 13, '14': 16, '23': 6, '24': 12, '34': 12, '123': 14, '124': 20, '134': 20, '234': 13, '1234': 21}
+Allocation: [8.333333333333334, 2.8333333333333335, 2.8333333333333335, 7.0]
+
+
+Reduced Graph:
+Node 2 is connected to 3 with cost of 1
+Node a is connected to 3 with cost of 4
+Node 1 is connected to 2 with cost of 4
+Node a is connected to 1 with cost of 4
+Node a is connected to 2 with cost of 4
+Node 1 is connected to 3 with cost of 4
+Node a is connected to b with cost of 5
+Node b is connected to 3 with cost of 5
+Node b is connected to 2 with cost of 5
+Node b is connected to 1 with cost of 5
+Node a is connected to 4 with cost of 7
+Node 1 is connected to 4 with cost of 7
+Node 2 is connected to 4 with cost of 7
+Node b is connected to 4 with cost of 7
+Node 3 is connected to 4 with cost of 7
+
+Allocation not in core of game...
+Sum of cost allocation and grand coalition cost: 21.0 != 21
+

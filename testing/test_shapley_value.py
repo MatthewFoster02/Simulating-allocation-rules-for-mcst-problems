@@ -6,6 +6,7 @@ from graph.node import Node
 from cooperative_functions.shapley_value import ShapleyValue
 from cooperative_functions.cooperative_gt import CoopMethods
 from irreducibililty.regular_reduce import RegularReduce
+from run_shapley_of_irreducible import get_random_source_sets
 
 @pytest.fixture
 def graph():
@@ -152,3 +153,12 @@ def test_reducing_and_shapley(graph:Graph, mcstEdges:list[Edge]):
     sv = ShapleyValue(coalitions=coalitions, num_players=3)
     shapley_value = sv.get_shapley_value()
     assert shapley_value == [5, 11, 5]
+
+def test_random_source_sets():
+    players = []
+    players.append(Node(label=1))
+    players.append(Node(label=2))
+    players.append(Node(label=3))
+    source_a_set, source_b_set = get_random_source_sets(players=players)
+    assert len(source_a_set) + len(source_b_set) == 4
+    assert len(source_a_set.union(source_b_set)) == 3

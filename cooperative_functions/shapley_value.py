@@ -15,7 +15,6 @@ class ShapleyValue:
         values = {}
         for order in orderings:
             values[order] = self.get_value(order)
-            print(values[order])
         
         shapley_value = self.average_values(list(values.values()))
         return shapley_value

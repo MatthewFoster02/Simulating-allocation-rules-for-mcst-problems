@@ -37,7 +37,7 @@ class RegularReduce:
         for edge in self.graph.get_edges():
             if edge.to_string() not in mcst_edges_str:
                 edges_not_in_mcst.append(edge)
-        return edges_not_in_mcst
+        return copy.deepcopy(edges_not_in_mcst)
 
     # TESTED
     def find_path_in_mcst(self, edge:Edge):
