@@ -69,6 +69,7 @@ def run():
     two_component_optimal_counter = 0
     overreduced = 0
     fixed_overreduced = 0
+    contra_4s = 0
 
     current_percentage = 0
     while limiter < limit:
@@ -111,21 +112,29 @@ def run():
             
             if not fixed.is_over_reduced():
                 fixed_overreduced += 1
-            else:
-                data = f"""
+                sv = ShapleyValue(coalitions_fixed_graph, len(graph.get_players()))
+                shapley_value = sv.get_shapley_value()
+
+                if not coop_original_graph.belongs_to_core(coalitions_original_graph, shapley_value):
+                    if len(graph.get_players()) == 4 and coalitions_original_graph['4'] == shapley_value[3]:
+                        contra_4s += 1
+                    else:
+                        contradiction_counter += 1
+                        data = f"""
 CONTRADICTION on graph number {limiter}:\n
 Graph Edges:
 {graph.to_string()}
 Source A: {source_a_set} Source B: {source_b_set}
-Coalitions: {coalitions_original_graph}\n\n
+Coalitions: {coalitions_original_graph}
+Coalitions (Reduced): {coalitions_reduced_graph}
+Coalitions (Fixed): {coalitions_fixed_graph}
+Allocation: {shapley_value}\n\n
 Reduced Graph:
 {reduced_graph.to_string()}
-Coalitions: {coalitions_reduced_graph}\n\n
-Fixed Graph:
-{fixed_graph.to_string()}
-Coalitions: {coalitions_fixed_graph}\n\n"""
-                with open('didnt_fixed.txt', 'a') as file:
-                    file.write(data)
+Allocation not in core of game...
+Sum of cost allocation and grand coalition cost: {sum(shapley_value)} != {list(coalitions_original_graph.values())[-1]}\n\n"""
+                        with open('contradictions_shapley_value_one_sources.txt', 'a') as file:
+                            file.write(data)
 
         limiter += 1
         percent_complete = round((limiter/limit)*100)
@@ -134,8 +143,10 @@ Coalitions: {coalitions_fixed_graph}\n\n"""
             print(f'{current_percentage}% complete...')
 
     print('DONE')
-    print(f'\nOverall: {overreduced-fixed_overreduced}/{limit} CONTRADICTIONS')
-    print(f'\nOverreduced amount: {overreduced}/{limit}')
-    print(f'\nOverreduced fixed amount: {fixed_overreduced}/{limit}')
+    print(f'\nOverall: {contradiction_counter}/{limit} CONTRADICTIONS')
+    print(f'\n4 issue: {contra_4s}/{limit} CONTRADICTIONS')
+    # print(f'\nOverall: {overreduced-fixed_overreduced}/{limit} CONTRADICTIONS')
+    # print(f'\nOverreduced amount: {overreduced}/{limit}')
+    # print(f'\nOverreduced fixed amount: {fixed_overreduced}/{limit}')
     print(f'{two_component_optimal_counter} times a randomly generated graph had 2 components in the optimal solution. {limiter+two_component_optimal_counter}')
 
