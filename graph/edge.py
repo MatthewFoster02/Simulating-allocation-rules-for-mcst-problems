@@ -24,5 +24,9 @@ class Edge:
     def get_cost(self):
         return self.cost
     
+    def is_same_edge_excluding_cost(self, other_edge:'Edge'):
+        return  self.start_node.get_label() == other_edge.get_start_node().get_label() and \
+                self.end_node.get_label() == other_edge.get_end_node().get_label()
+    
     def to_string(self):
         return f"Node {self.start_node.get_label()} is connected to {self.end_node.get_label()} with cost of {self.cost}"

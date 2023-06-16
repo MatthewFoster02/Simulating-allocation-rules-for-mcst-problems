@@ -78,5 +78,3 @@ class RegularReduce:
                     return True
         
         return False
-
-    # BOILERPLATE

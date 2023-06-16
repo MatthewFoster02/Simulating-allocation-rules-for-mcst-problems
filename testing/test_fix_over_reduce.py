@@ -1,0 +1,144 @@
+import pytest
+
+from cooperative_functions.cooperative_gt import CoopMethods
+from irreducibililty.fix_over_reduce import FixOverReduce
+from graph.node import Node
+from graph.edge import Edge
+from graph.graph import Graph
+
+@pytest.fixture
+def original_graph():
+    node_source_a = Node(type='source', label='a')
+    node_source_b = Node(type='source', label='b')
+    node_player_1 = Node(label=1)
+    node_player_2 = Node(label=2)
+    node_player_3 = Node(label=3)
+    
+    edges = []
+    edges.append(Edge(node_source_a, node_source_b, 2))
+    edges.append(Edge(node_source_a, node_player_1, 9))
+    edges.append(Edge(node_source_a, node_player_2, 8))
+    edges.append(Edge(node_source_a, node_player_3, 7))
+    edges.append(Edge(node_source_b, node_player_1, 4))
+    edges.append(Edge(node_source_b, node_player_2, 3))
+    edges.append(Edge(node_source_b, node_player_3, 8))
+    edges.append(Edge(node_player_1, node_player_2, 5))
+    edges.append(Edge(node_player_1, node_player_3, 6))
+    edges.append(Edge(node_player_2, node_player_3, 4))
+
+    sources = [node_source_a, node_source_b]
+    players = [node_player_1, node_player_2, node_player_3]
+
+    graph = Graph(edges=edges, sources=sources, players=players)
+    return graph
+
+@pytest.fixture
+def reduced_graph():
+    node_source_a = Node(type='source', label='a')
+    node_source_b = Node(type='source', label='b')
+    node_player_1 = Node(label=1)
+    node_player_2 = Node(label=2)
+    node_player_3 = Node(label=3)
+    
+    edges = []
+    edges.append(Edge(node_source_a, node_source_b, 2))
+    edges.append(Edge(node_source_a, node_player_1, 4))
+    edges.append(Edge(node_source_a, node_player_2, 3))
+    edges.append(Edge(node_source_a, node_player_3, 4))
+    edges.append(Edge(node_source_b, node_player_1, 4))
+    edges.append(Edge(node_source_b, node_player_2, 3))
+    edges.append(Edge(node_source_b, node_player_3, 4))
+    edges.append(Edge(node_player_1, node_player_2, 4))
+    edges.append(Edge(node_player_1, node_player_3, 4))
+    edges.append(Edge(node_player_2, node_player_3, 4))
+
+    sources = [node_source_a, node_source_b]
+    players = [node_player_1, node_player_2, node_player_3]
+
+    graph = Graph(edges=edges, sources=sources, players=players)
+    return graph
+
+@pytest.fixture
+def mcstEdges():
+    node_source_a = Node(type='source', label='a')
+    node_source_b = Node(type='source', label='b')
+    node_player_1 = Node(label=1)
+    node_player_2 = Node(label=2)
+    node_player_3 = Node(label=3)
+
+    mcst_edges = []
+    mcst_edges.append(Edge(node_source_a, node_source_b, 2))
+    mcst_edges.append(Edge(node_source_b, node_player_2, 3))
+    mcst_edges.append(Edge(node_source_b, node_player_1, 4))
+    mcst_edges.append(Edge(node_player_2, node_player_3, 4))
+    return mcst_edges
+
+def test_is_over_reduced(reduced_graph:Graph, original_graph:Graph):
+    source_a_set = {2, 3}
+    source_b_set = {1}
+
+    coop = CoopMethods(graph=original_graph)
+    original_coalitions = coop.get_player_coalition_values(source_a_set=source_a_set, source_b_set=source_b_set)
+
+    fixOverReduce = FixOverReduce(reduced_graph=reduced_graph, original_coalitions=original_coalitions, source_a_set=source_a_set, source_b_set=source_b_set)
+    assert fixOverReduce.is_over_reduced()
+
+def test_is_over_reduced_not(reduced_graph:Graph, original_graph:Graph):
+    source_a_set = {2, 3}
+    source_b_set = {1}
+
+    coop = CoopMethods(graph=original_graph)
+    original_coalitions = coop.get_player_coalition_values(source_a_set=source_a_set, source_b_set=source_b_set)
+
+    fixOverReduce = FixOverReduce(reduced_graph=original_graph, original_coalitions=original_coalitions, source_a_set=source_a_set, source_b_set=source_b_set)
+    assert not fixOverReduce.is_over_reduced()
+
+def test_get_cost_of_path(mcstEdges:list[Edge]):
+    fix = FixOverReduce()
+    assert fix.get_cost_of_path(mcstEdges) == 13
+
+def test_find_cost_in_mcst_to_source_player1(mcstEdges:list[Edge]):
+    source_a_set = {2, 3}
+    source_b_set = {1}
+    fix = FixOverReduce(mcst_edges=mcstEdges, source_a_set=source_a_set, source_b_set=source_b_set)
+    assert fix.find_cost_in_mcst_to_source(1) == 4
+
+def test_find_cost_in_mcst_to_source_player2(mcstEdges:list[Edge]):
+    source_a_set = {2, 3}
+    source_b_set = {1}
+    fix = FixOverReduce(mcst_edges=mcstEdges, source_a_set=source_a_set, source_b_set=source_b_set)
+    assert fix.find_cost_in_mcst_to_source(2) == 5
+
+def test_find_cost_in_mcst_to_source_player3(mcstEdges:list[Edge]):
+    source_a_set = {2, 3}
+    source_b_set = {1}
+    fix = FixOverReduce(mcst_edges=mcstEdges, source_a_set=source_a_set, source_b_set=source_b_set)
+    assert fix.find_cost_in_mcst_to_source(3) == 9
+
+def test_get_all_edges_with_endpoints_one(original_graph:Graph):
+    fix = FixOverReduce(reduced_graph=original_graph)
+    endpoints = ['b', 1]
+    edges = fix.get_all_edges_with_endpoints(endpoints=endpoints)
+    assert edges[0].to_string() == 'Node b is connected to 1 with cost of 4' 
+
+def test_get_all_edges_with_endpoints_three(original_graph:Graph):
+    fix = FixOverReduce(reduced_graph=original_graph)
+    endpoints = ['a', 2, 3]
+    edges = fix.get_all_edges_with_endpoints(endpoints=endpoints)
+    for edge in edges:
+        assert  edge.to_string() == 'Node a is connected to 2 with cost of 8' or \
+                edge.to_string() == 'Node a is connected to 3 with cost of 7' or \
+                edge.to_string() == 'Node 2 is connected to 3 with cost of 4'
+
+def test_get_edges_between_players_and_source(original_graph:Graph):
+    source_a_set = {2, 3}
+    source_b_set = {1}
+    fix = FixOverReduce(reduced_graph=original_graph, source_a_set=source_a_set, source_b_set=source_b_set)
+    edges = fix.get_edges_between_players_and_source(source_label='a')
+    for edge in edges:
+        assert  edge.to_string() == 'Node a is connected to 2 with cost of 8' or \
+                edge.to_string() == 'Node a is connected to 3 with cost of 7' or \
+                edge.to_string() == 'Node 2 is connected to 3 with cost of 4'
+
+
+
