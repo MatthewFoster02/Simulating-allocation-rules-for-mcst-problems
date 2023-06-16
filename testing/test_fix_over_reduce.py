@@ -81,7 +81,7 @@ def test_is_over_reduced(reduced_graph:Graph, original_graph:Graph):
     original_coalitions = coop.get_player_coalition_values(source_a_set=source_a_set, source_b_set=source_b_set)
 
     fixOverReduce = FixOverReduce(reduced_graph=reduced_graph, original_coalitions=original_coalitions, source_a_set=source_a_set, source_b_set=source_b_set)
-    assert fixOverReduce.is_over_reduced()
+    assert fixOverReduce.is_over_reduced(graph=reduced_graph)
 
 def test_is_over_reduced_not(reduced_graph:Graph, original_graph:Graph):
     source_a_set = {2, 3}
@@ -91,7 +91,7 @@ def test_is_over_reduced_not(reduced_graph:Graph, original_graph:Graph):
     original_coalitions = coop.get_player_coalition_values(source_a_set=source_a_set, source_b_set=source_b_set)
 
     fixOverReduce = FixOverReduce(reduced_graph=original_graph, original_coalitions=original_coalitions, source_a_set=source_a_set, source_b_set=source_b_set)
-    assert not fixOverReduce.is_over_reduced()
+    assert not fixOverReduce.is_over_reduced(graph=original_graph)
 
 def test_get_cost_of_path(mcstEdges:list[Edge]):
     fix = FixOverReduce()

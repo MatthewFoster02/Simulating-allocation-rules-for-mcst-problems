@@ -92,6 +92,7 @@ class FixOverReduce:
     
 
 
+
     def is_edge_at_lower_bound(self, edge:Edge):
         for reduced_edge in self.reduced_graph.get_edges():
             if edge.is_same_edge_excluding_cost(reduced_edge) and edge.get_cost() == reduced_edge.get_cost():
@@ -103,17 +104,17 @@ class FixOverReduce:
 
     def does_reducing_change_grand_coalition(self, edge:Edge):
         edge.reduce_cost()
-        if self.is_over_reduced():
+        if self.is_over_reduced(graph=self.original_graph):
             edge.increase_cost()
             return True
         edge.increase_cost()
         return False
     
     # TESTED
-    def is_over_reduced(self):
-        coop = CoopMethods(graph=self.reduced_graph)
+    def is_over_reduced(self, graph:Graph):
+        coop = CoopMethods(graph=graph)
         reduced_coalitions = coop.get_player_coalition_values(source_a_set=self.source_a_set, source_b_set=self.source_b_set)
-        key = ''.join(str(i) for i in range(1, len(self.reduced_graph.get_players()) + 1))
+        key = ''.join(str(i) for i in range(1, len(graph.get_players()) + 1))
         return reduced_coalitions[key] < self.original_coalitions[key]
         
     # TESTED
