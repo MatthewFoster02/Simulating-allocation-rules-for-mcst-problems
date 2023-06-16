@@ -39,7 +39,7 @@ class FixOverReduce:
             if self.edge_in_mcst(edge):
                 continue
             if edge.get_cost() < costs['b']:
-                edge.set_costs(costs['b'])
+                edge.set_cost(costs['b'])
         
         # Ensure edge costs in reduced graph are updated
         updated_edges = []
