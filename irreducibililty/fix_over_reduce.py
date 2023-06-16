@@ -12,49 +12,52 @@ class FixOverReduce:
         self.source_a_set = source_a_set
         self.source_b_set = source_b_set
     
-    def fix_over_reduce(self):
+    def fix_over_reduce(self) -> Graph:
         # Find cost in mcst for each player to connect to its wanted source
         # Keep the minimum cost for each source, a and b
         # Check edges in Na and Nb, make sure all are at least this cost from above
-        while self.is_over_reduced():
-            costs = {
-                'a': 10000,
-                'b': 10000
-            }
-            for player in self.reduced_graph.get_players():
-                cost_to_connect_to_source = self.find_cost_in_mcst_to_source(player.get_label())
-                if player.get_label() in self.source_a_set and cost_to_connect_to_source < costs['a']:
-                    costs['a'] = cost_to_connect_to_source
-                
-                if player.get_label() in self.source_b_set and cost_to_connect_to_source < costs['b']:
-                    costs['b'] = cost_to_connect_to_source
+        costs = {
+            'a': 10000,
+            'b': 10000
+        }
+        for player in self.reduced_graph.get_players():
+            cost_to_connect_to_source = self.find_cost_in_mcst_to_source(player.get_label())
+            if player.get_label() in self.source_a_set and cost_to_connect_to_source < costs['a']:
+                costs['a'] = cost_to_connect_to_source
+            
+            if player.get_label() in self.source_b_set and cost_to_connect_to_source < costs['b']:
+                costs['b'] = cost_to_connect_to_source
 
-            edges_a = self.get_edges_between_players_and_source('a')
-            edges_b = self.get_edges_between_players_and_source('b')
-            for edge in edges_a:
-                if edge.get_cost() < costs['a']:
-                    edge.set_cost(costs['a'])
-            for edge in edges_b:
-                if edge.get_cost() < costs['b']:
-                    edge.set_costs(costs['b'])
+        edges_a = self.get_edges_between_players_and_source('a')
+        edges_b = self.get_edges_between_players_and_source('b')
+        for edge in edges_a:
+            if self.edge_in_mcst(edge):
+                continue
+            if edge.get_cost() < costs['a']:
+                edge.set_cost(costs['a'])
+        for edge in edges_b:
+            if self.edge_in_mcst(edge):
+                continue
+            if edge.get_cost() < costs['b']:
+                edge.set_costs(costs['b'])
+        
+        # Ensure edge costs in reduced graph are updated
+        updated_edges = []
+        for edge in self.reduced_graph.get_edges():
+            no_edge_added = True
+            for a_edge in edges_a:
+                if edge.is_same_edge_excluding_cost(a_edge):
+                    updated_edges.append(a_edge)
+                    no_edge_added = False
+            for b_edge in edges_b:
+                if edge.is_same_edge_excluding_cost(b_edge):
+                    updated_edges.append(b_edge)
+                    no_edge_added = False
             
-            # Ensure edge costs in reduced graph are updated
-            updated_edges = []
-            for edge in self.reduced_graph.get_edges():
-                no_edge_added = True
-                for a_edge in edges_a:
-                    if edge.is_same_edge_excluding_cost(a_edge):
-                        updated_edges.append(a_edge)
-                        no_edge_added = False
-                for b_edge in edges_b:
-                    if edge.is_same_edge_excluding_cost(b_edge):
-                        updated_edges.append(b_edge)
-                        no_edge_added = False
-                
-                if no_edge_added:
-                    updated_edges.append(edge)
-            
-            self.reduced_graph.set_edges(updated_edges)
+            if no_edge_added:
+                updated_edges.append(edge)
+        
+        self.reduced_graph.set_edges(updated_edges)
 
         return self.reduced_graph
     
@@ -106,7 +109,14 @@ class FixOverReduce:
             if start_label in endpoints and end_label in endpoints:
                 edges_to_return.append(edge)
         return edges_to_return
-        
+    
+    # TESTED
+    def edge_in_mcst(self, edge:Edge):
+        for mcst_edge in self.mcst_edges:
+            if mcst_edge.is_same_edge_excluding_cost(edge):
+                return True
+        return False
+
     def get_path(self, start_label, end_label):
         self.current_path = []
         visited = set()
