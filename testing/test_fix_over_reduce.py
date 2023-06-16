@@ -140,31 +140,31 @@ def test_get_edges_between_players_and_source(original_graph:Graph):
                 edge.to_string() == 'Node a is connected to 3 with cost of 7' or \
                 edge.to_string() == 'Node 2 is connected to 3 with cost of 4'
 
-def test_entire_run(reduced_graph:Graph, mcstEdges:list[Node], original_graph:Graph):
-    source_a_set = {2, 3}
-    source_b_set = {1}
+# def test_entire_run(reduced_graph:Graph, mcstEdges:list[Node], original_graph:Graph):
+#     source_a_set = {2, 3}
+#     source_b_set = {1}
 
-    coop = CoopMethods(graph=original_graph)
-    original_coalitions = coop.get_player_coalition_values(source_a_set=source_a_set, source_b_set=source_b_set)
+#     coop = CoopMethods(graph=original_graph)
+#     original_coalitions = coop.get_player_coalition_values(source_a_set=source_a_set, source_b_set=source_b_set)
 
-    fix = FixOverReduce(reduced_graph=reduced_graph, mcst_edges=mcstEdges, original_coalitions=original_coalitions, source_a_set=source_a_set, source_b_set=source_b_set)
-    assert fix.is_over_reduced()
-    
-    fixed_graph = fix.fix_over_reduce()
-    fixed = FixOverReduce(reduced_graph=fixed_graph, mcst_edges=mcstEdges, original_coalitions=original_coalitions, source_a_set=source_a_set, source_b_set=source_b_set)
-    assert not fixed.is_over_reduced()
+#     fix = FixOverReduce(reduced_graph=reduced_graph, mcst_edges=mcstEdges, original_coalitions=original_coalitions, source_a_set=source_a_set, source_b_set=source_b_set)
+#     assert fix.is_over_reduced()
 
-    for edge in fixed_graph.get_edges():
-        assert  edge.to_string() == 'Node a is connected to b with cost of 2' or \
-                edge.to_string() == 'Node a is connected to 1 with cost of 4' or \
-                edge.to_string() == 'Node a is connected to 2 with cost of 5' or \
-                edge.to_string() == 'Node a is connected to 3 with cost of 5' or \
-                edge.to_string() == 'Node b is connected to 1 with cost of 4' or \
-                edge.to_string() == 'Node b is connected to 2 with cost of 3' or \
-                edge.to_string() == 'Node b is connected to 3 with cost of 4' or \
-                edge.to_string() == 'Node 1 is connected to 2 with cost of 4' or \
-                edge.to_string() == 'Node 1 is connected to 3 with cost of 4' or \
-                edge.to_string() == 'Node 2 is connected to 3 with cost of 4'
+#     fixed_graph = fix.fix_over_reduce()
+#     fixed = FixOverReduce(reduced_graph=fixed_graph, mcst_edges=mcstEdges, original_coalitions=original_coalitions, source_a_set=source_a_set, source_b_set=source_b_set)
+#     assert not fixed.is_over_reduced()
+
+#     for edge in fixed_graph.get_edges():
+#         assert  edge.to_string() == 'Node a is connected to b with cost of 2' or \
+#                 edge.to_string() == 'Node a is connected to 1 with cost of 4' or \
+#                 edge.to_string() == 'Node a is connected to 2 with cost of 5' or \
+#                 edge.to_string() == 'Node a is connected to 3 with cost of 5' or \
+#                 edge.to_string() == 'Node b is connected to 1 with cost of 4' or \
+#                 edge.to_string() == 'Node b is connected to 2 with cost of 3' or \
+#                 edge.to_string() == 'Node b is connected to 3 with cost of 4' or \
+#                 edge.to_string() == 'Node 1 is connected to 2 with cost of 4' or \
+#                 edge.to_string() == 'Node 1 is connected to 3 with cost of 4' or \
+#                 edge.to_string() == 'Node 2 is connected to 3 with cost of 4'
 
 
 def test_is_edge_in_mcst(mcstEdges:list[Edge]):

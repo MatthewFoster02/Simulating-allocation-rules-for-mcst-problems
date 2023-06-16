@@ -81,3 +81,10 @@ def test_edges_equal_false():
     edge1 = Edge(node_source_b, node_player_1, 3)
     edge2 = Edge(node_source_b, node_player_2, 3)
     assert not edge1.is_same_edge_excluding_cost(edge2)
+
+def test_reduce_edge_cost():
+    node_source_b = Node(type='source', label='b')
+    node_player_1 = Node(label=1)
+    edge = Edge(node_source_b, node_player_1, 3)
+    edge.reduce_cost()
+    assert edge.get_cost() == 2

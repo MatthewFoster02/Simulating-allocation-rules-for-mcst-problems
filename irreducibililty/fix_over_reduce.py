@@ -5,14 +5,33 @@ from graph.graph import Graph
 from graph.edge import Edge
 
 class FixOverReduce:
-    def __init__(self, reduced_graph:Graph=None, mcst_edges:list[Edge]=None, original_coalitions:dict=None, source_a_set:set=None, source_b_set:set=None):
+    def __init__(self, reduced_graph:Graph=None,
+                 mcst_edges:list[Edge]=None,
+                 original_graph:Graph=None,
+                 original_coalitions:dict=None,
+                 source_a_set:set=None,
+                 source_b_set:set=None):
         self.reduced_graph = reduced_graph
         self.mcst_edges = mcst_edges
+        self.original_graph = original_graph
         self.original_coalitions = original_coalitions
         self.source_a_set = source_a_set
         self.source_b_set = source_b_set
     
     def fix_over_reduce(self) -> Graph:
+        # Take in the reduced graph and original graph and all others as before
+        # Loop through every edge and decrease by one until
+        #   a) The cost of the edge is equal to its cost in the reduced graph.
+        #   b) Reducing the edge anymore results in different value for grand coalition (2 component optimal solution)
+
+        for edge in self.original_graph.get_edges():
+            if self.no_further_reduce(edge):
+                continue
+
+            edge.reduce_cost()
+
+        return self.original_graph
+
         # Find cost in mcst for each player to connect to its wanted source
         # Keep the minimum cost for each source, a and b
         # Check edges in Na and Nb, make sure all are at least this cost from above
@@ -60,6 +79,17 @@ class FixOverReduce:
         self.reduced_graph.set_edges(updated_edges)
 
         return self.reduced_graph
+    
+    def no_further_reduce(self, edge:Edge):
+        edge_at_lower_bound = self.is_edge_at_lower_bound(edge)
+        reducing_edge_changes_grand_coalition = self.does_reducing_change_grand_coalition(edge)
+        return edge_at_lower_bound or reducing_edge_changes_grand_coalition
+    
+    def is_edge_at_lower_bound(self, edge:Edge):
+        pass
+
+    def does_reducing_change_grand_coalition(self, edge:Edge):
+        pass
     
     # TESTED
     def is_over_reduced(self):
