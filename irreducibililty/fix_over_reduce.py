@@ -28,68 +28,86 @@ class FixOverReduce:
             if self.no_further_reduce(edge):
                 continue
 
-            edge.reduce_cost()
+            edge.reduce_cost() # Increase cost
 
         return self.original_graph
 
         # Find cost in mcst for each player to connect to its wanted source
         # Keep the minimum cost for each source, a and b
         # Check edges in Na and Nb, make sure all are at least this cost from above
-        costs = {
-            'a': 10000,
-            'b': 10000
-        }
-        for player in self.reduced_graph.get_players():
-            cost_to_connect_to_source = self.find_cost_in_mcst_to_source(player.get_label())
-            if player.get_label() in self.source_a_set and cost_to_connect_to_source < costs['a']:
-                costs['a'] = cost_to_connect_to_source
-            
-            if player.get_label() in self.source_b_set and cost_to_connect_to_source < costs['b']:
-                costs['b'] = cost_to_connect_to_source
 
-        edges_a = self.get_edges_between_players_and_source('a')
-        edges_b = self.get_edges_between_players_and_source('b')
-        for edge in edges_a:
-            if self.edge_in_mcst(edge):
-                continue
-            if edge.get_cost() < costs['a']:
-                edge.set_cost(costs['a'])
-        for edge in edges_b:
-            if self.edge_in_mcst(edge):
-                continue
-            if edge.get_cost() < costs['b']:
-                edge.set_cost(costs['b'])
-        
-        # Ensure edge costs in reduced graph are updated
-        updated_edges = []
-        for edge in self.reduced_graph.get_edges():
-            no_edge_added = True
-            for a_edge in edges_a:
-                if edge.is_same_edge_excluding_cost(a_edge):
-                    updated_edges.append(a_edge)
-                    no_edge_added = False
-            for b_edge in edges_b:
-                if edge.is_same_edge_excluding_cost(b_edge):
-                    updated_edges.append(b_edge)
-                    no_edge_added = False
-            
-            if no_edge_added:
-                updated_edges.append(edge)
-        
-        self.reduced_graph.set_edges(updated_edges)
 
-        return self.reduced_graph
+        # costs = {
+        #     'a': 10000,
+        #     'b': 10000
+        # }
+        # for player in self.reduced_graph.get_players():
+        #     cost_to_connect_to_source = self.find_cost_in_mcst_to_source(player.get_label())
+        #     if player.get_label() in self.source_a_set and cost_to_connect_to_source < costs['a']:
+        #         costs['a'] = cost_to_connect_to_source
+            
+        #     if player.get_label() in self.source_b_set and cost_to_connect_to_source < costs['b']:
+        #         costs['b'] = cost_to_connect_to_source
+
+        # edges_a = self.get_edges_between_players_and_source('a')
+        # edges_b = self.get_edges_between_players_and_source('b')
+        # for edge in edges_a:
+        #     if self.edge_in_mcst(edge):
+        #         continue
+        #     if edge.get_cost() < costs['a']:
+        #         edge.set_cost(costs['a'])
+        # for edge in edges_b:
+        #     if self.edge_in_mcst(edge):
+        #         continue
+        #     if edge.get_cost() < costs['b']:
+        #         edge.set_cost(costs['b'])
+        
+        # # Ensure edge costs in reduced graph are updated
+        # updated_edges = []
+        # for edge in self.reduced_graph.get_edges():
+        #     no_edge_added = True
+        #     for a_edge in edges_a:
+        #         if edge.is_same_edge_excluding_cost(a_edge):
+        #             updated_edges.append(a_edge)
+        #             no_edge_added = False
+        #     for b_edge in edges_b:
+        #         if edge.is_same_edge_excluding_cost(b_edge):
+        #             updated_edges.append(b_edge)
+        #             no_edge_added = False
+            
+        #     if no_edge_added:
+        #         updated_edges.append(edge)
+        
+        # self.reduced_graph.set_edges(updated_edges)
+
+        # return self.reduced_graph
     
+
+
+
     def no_further_reduce(self, edge:Edge):
         edge_at_lower_bound = self.is_edge_at_lower_bound(edge)
         reducing_edge_changes_grand_coalition = self.does_reducing_change_grand_coalition(edge)
         return edge_at_lower_bound or reducing_edge_changes_grand_coalition
     
+
+
     def is_edge_at_lower_bound(self, edge:Edge):
-        pass
+        for reduced_edge in self.reduced_graph.get_edges():
+            if edge.is_same_edge_excluding_cost(reduced_edge) and edge.get_cost() == reduced_edge.get_cost():
+                return True
+        return False
+    
+
+
 
     def does_reducing_change_grand_coalition(self, edge:Edge):
-        pass
+        edge.reduce_cost()
+        if self.is_over_reduced():
+            edge.increase_cost()
+            return True
+        edge.increase_cost()
+        return False
     
     # TESTED
     def is_over_reduced(self):

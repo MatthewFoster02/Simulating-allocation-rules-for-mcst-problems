@@ -27,6 +27,9 @@ class Edge:
     def reduce_cost(self):
         self.cost -= 1
     
+    def increase_cost(self):
+        self.cost += 1
+    
     def is_same_edge_excluding_cost(self, other_edge:'Edge'):
         return  self.start_node.get_label() == other_edge.get_start_node().get_label() and \
                 self.end_node.get_label() == other_edge.get_end_node().get_label()

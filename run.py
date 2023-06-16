@@ -59,12 +59,14 @@ def will_optimal_solution_have_2_components(mcst:MCST, graph:Graph, source_a_set
     
 
 def run():
-    type_rule = int(input('Enter rule number:\n1. Original\n2. Prims\n3. Path\n'))
     limiter = 0
-    limit = 1000000
+    limit = 100
 
-    contradiction_counter = 0
+    path_contradiction_counter = 0
+    prim_contradiction_counter = 0
+    kruskal_contradiction_counter = 0
     two_component_optimal_counter = 0
+    path_rule_couldnt_compute = 0
 
     current_percentage = 0
     while limiter < limit:
@@ -88,39 +90,69 @@ def run():
         coalitions = coop.get_player_coalition_values(source_a_set, source_b_set)
 
         # Get allocation using path rule
-        if(type_rule == 3):
-            pathRule = PathRule(graph=graph, mcst_edges=mcst_edges, source_a_set=source_a_set, source_b_set=source_b_set)
-            solution = pathRule.run_rule()
-            if not solution:
-                allocation = pathRule.get_cost_allocation()
-            else:
-                type_rule = 1
+        
+        pathRule = PathRule(graph=graph, mcst_edges=mcst_edges, source_a_set=source_a_set, source_b_set=source_b_set)
+        solution = pathRule.run_rule()
+        path_allocation_worked = False
+        if not solution:
+            path_rule_couldnt_compute += 1
+        else:
+            path_allocation = pathRule.get_cost_allocation()
+            path_allocation_worked = True
                 
         
         # Get allocation using kruskal and prim.
-        if(type_rule == 2):
-            mcst_instance.kruskal()
-            mcst_instance.prim()
-            allocation = mcst_instance.getCostAllocation()
+        mcst_instance.kruskal()
+        prim_allocation = mcst_instance.prim()
 
         # Original
-        if(type_rule == 1):
-            mcst_instance.kruskal()
-            mcst_instance.kruskal(share_edge_costs=True)
-            allocation = mcst_instance.getCostAllocation()
+        mcst_instance.kruskal()
+        mcst_instance.kruskal(share_edge_costs=True)
+        kruskal_allocation = mcst_instance.getCostAllocation()
 
-        if not coop.belongs_to_core(coalitions, allocation):
-            contradiction_counter += 1
+        # Check path allocation
+        if path_allocation_worked and not coop.belongs_to_core(coalitions, path_allocation):
+            path_contradiction_counter += 1
             data = f"""
 CONTRADICTION on graph number {limiter}:\n
 Graph Edges:
 {graph.to_string()}
 Source A: {source_a_set} Source B: {source_b_set}
 Coalitions: {coalitions}
-Allocation: {allocation}
+Allocation: {path_allocation}
 Allocation not in core of game...
-Sum of cost allocation and grand coalition cost: {sum(allocation)} != {list(coalitions.values())[-1]}\n\n"""
-            with open('contradictions.txt', 'a') as file:
+Sum of cost allocation and grand coalition cost: {sum(path_allocation)} != {list(coalitions.values())[-1]}\n\n"""
+            with open('path_contradictions.txt', 'a') as file:
+                file.write(data)
+
+        # Check prim allocation
+        if not coop.belongs_to_core(coalitions, prim_allocation):
+            prim_contradiction_counter += 1
+            data = f"""
+CONTRADICTION on graph number {limiter}:\n
+Graph Edges:
+{graph.to_string()}
+Source A: {source_a_set} Source B: {source_b_set}
+Coalitions: {coalitions}
+Allocation: {prim_allocation}
+Allocation not in core of game...
+Sum of cost allocation and grand coalition cost: {sum(prim_allocation)} != {list(coalitions.values())[-1]}\n\n"""
+            with open('path_contradictions.txt', 'a') as file:
+                file.write(data)
+
+        # Check kruskal allocation
+        if not coop.belongs_to_core(coalitions, kruskal_allocation):
+            kruskal_contradiction_counter += 1
+            data = f"""
+CONTRADICTION on graph number {limiter}:\n
+Graph Edges:
+{graph.to_string()}
+Source A: {source_a_set} Source B: {source_b_set}
+Coalitions: {coalitions}
+Allocation: {kruskal_allocation}
+Allocation not in core of game...
+Sum of cost allocation and grand coalition cost: {sum(kruskal_allocation)} != {list(coalitions.values())[-1]}\n\n"""
+            with open('path_contradictions.txt', 'a') as file:
                 file.write(data)
 
         limiter += 1
@@ -130,5 +162,7 @@ Sum of cost allocation and grand coalition cost: {sum(allocation)} != {list(coal
             print(f'{current_percentage}% complete...')
 
     print('DONE')
-    print(f'\nOverall: {contradiction_counter}/{limit} CONTRADICTIONS')
+    print(f'\nOverall: {kruskal_contradiction_counter}/{limit} CONTRADICTIONS when using Kruskal')
+    print(f'\nOverall: {prim_contradiction_counter}/{limit} CONTRADICTIONS when using Prim')
+    print(f'\nOverall: {path_contradiction_counter}/{limit} CONTRADICTIONS when using Path')
     print(f'{two_component_optimal_counter} times a randomly generated graph had 2 components in the optimal solution. {limiter+two_component_optimal_counter}')

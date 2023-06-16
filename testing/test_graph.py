@@ -88,3 +88,10 @@ def test_reduce_edge_cost():
     edge = Edge(node_source_b, node_player_1, 3)
     edge.reduce_cost()
     assert edge.get_cost() == 2
+
+def test_increase_edge_cost():
+    node_source_b = Node(type='source', label='b')
+    node_player_1 = Node(label=1)
+    edge = Edge(node_source_b, node_player_1, 3)
+    edge.increase_cost()
+    assert edge.get_cost() == 4

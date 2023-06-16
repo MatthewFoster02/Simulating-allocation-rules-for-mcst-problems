@@ -23,6 +23,7 @@ class PathRule:
             no_player_to_pay = self.check_for_player_who_can_pay()
             if no_player_to_pay:
                 return False
+        return self.cost_allocation
     
     # TESTED
     def does_one_player_have_edges(self):
