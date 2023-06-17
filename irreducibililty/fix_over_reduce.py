@@ -25,10 +25,8 @@ class FixOverReduce:
         #   b) Reducing the edge anymore results in different value for grand coalition (2 component optimal solution)
 
         for edge in self.original_graph.get_edges():
-            if self.no_further_reduce(edge):
-                continue
-
-            edge.reduce_cost() # Increase cost
+            while not self.no_further_reduce(edge): # Reduce each edge by as much as possible
+                edge.reduce_cost()
 
         return self.original_graph
 
@@ -82,29 +80,25 @@ class FixOverReduce:
 
         # return self.reduced_graph
     
-
-
-
+    # TESTED
     def no_further_reduce(self, edge:Edge):
         edge_at_lower_bound = self.is_edge_at_lower_bound(edge)
         reducing_edge_changes_grand_coalition = self.does_reducing_change_grand_coalition(edge)
         return edge_at_lower_bound or reducing_edge_changes_grand_coalition
     
-
-
-
+    # TESTED
     def is_edge_at_lower_bound(self, edge:Edge):
         for reduced_edge in self.reduced_graph.get_edges():
             if edge.is_same_edge_excluding_cost(reduced_edge) and edge.get_cost() == reduced_edge.get_cost():
+                print(edge.to_string())
                 return True
         return False
-    
 
-
-
+    # TESTED
     def does_reducing_change_grand_coalition(self, edge:Edge):
         edge.reduce_cost()
         if self.is_over_reduced(graph=self.original_graph):
+            print(edge.to_string())
             edge.increase_cost()
             return True
         edge.increase_cost()
