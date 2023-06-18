@@ -60,7 +60,7 @@ def will_optimal_solution_have_2_components(mcst:MCST, graph:Graph, source_a_set
 
 def run():
     limiter = 0
-    limit = 100
+    limit = 1000000
 
     path_contradiction_counter = 0
     prim_contradiction_counter = 0
@@ -103,9 +103,11 @@ def run():
         
         # Get allocation using kruskal and prim.
         mcst_instance.kruskal()
-        prim_allocation = mcst_instance.prim()
+        mcst_instance.prim()
+        prim_allocation = mcst_instance.getCostAllocation()
 
         # Original
+        mcst_instance.resetCostAllocation()
         mcst_instance.kruskal()
         mcst_instance.kruskal(share_edge_costs=True)
         kruskal_allocation = mcst_instance.getCostAllocation()
@@ -137,7 +139,7 @@ Coalitions: {coalitions}
 Allocation: {prim_allocation}
 Allocation not in core of game...
 Sum of cost allocation and grand coalition cost: {sum(prim_allocation)} != {list(coalitions.values())[-1]}\n\n"""
-            with open('path_contradictions.txt', 'a') as file:
+            with open('prim_contradictions.txt', 'a') as file:
                 file.write(data)
 
         # Check kruskal allocation
@@ -152,7 +154,7 @@ Coalitions: {coalitions}
 Allocation: {kruskal_allocation}
 Allocation not in core of game...
 Sum of cost allocation and grand coalition cost: {sum(kruskal_allocation)} != {list(coalitions.values())[-1]}\n\n"""
-            with open('path_contradictions.txt', 'a') as file:
+            with open('kruskal_contradictions.txt', 'a') as file:
                 file.write(data)
 
         limiter += 1

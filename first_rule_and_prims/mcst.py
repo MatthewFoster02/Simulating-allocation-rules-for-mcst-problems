@@ -101,8 +101,6 @@ class MCST:
             self.share_cost_of_edge(mcst_edge)
             start_component, end_component = self.find_sets(mcst_edge.get_start_node().get_label(), mcst_edge.get_end_node().get_label())
             self.join_sets(start_component, end_component)
-        
-        return self.cost_allocation
 
     # TESTED
     def playerWantsSource(self, source_label:str, player_label:int):
@@ -332,9 +330,13 @@ class MCST:
     
     def setCostAllocation(self, allocation):
         self.cost_allocation = allocation
+
+    def resetCostAllocation(self):
+        for i in range(len(self.cost_allocation)):
+            self.cost_allocation[i] = 0
     
     def getCostAllocation(self):
-        return self.cost_allocation
+        return copy.deepcopy(self.cost_allocation)
     
     def setMCST(self, mcst:list[Edge]):
         self.mcst = mcst
