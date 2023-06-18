@@ -90,7 +90,6 @@ class FixOverReduce:
     def is_edge_at_lower_bound(self, edge:Edge):
         for reduced_edge in self.reduced_graph.get_edges():
             if edge.is_same_edge_excluding_cost(reduced_edge) and edge.get_cost() == reduced_edge.get_cost():
-                print(edge.to_string())
                 return True
         return False
 
@@ -98,7 +97,6 @@ class FixOverReduce:
     def does_reducing_change_grand_coalition(self, edge:Edge):
         edge.reduce_cost()
         if self.is_over_reduced(graph=self.original_graph):
-            print(edge.to_string())
             edge.increase_cost()
             return True
         edge.increase_cost()

@@ -63,7 +63,7 @@ def will_optimal_solution_have_2_components(mcst:MCST, graph:Graph, source_a_set
 
 def run():
     limiter = 0
-    limit = 100
+    limit = 1000000
 
     contradiction_counter = 0
     two_component_optimal_counter = 0
@@ -71,7 +71,7 @@ def run():
     fixed_overreduced = 0
     contra_4s = 0
 
-    current_percentage = 0
+    current_percentage = 0.0
     while limiter < limit:
         graph = Graph()
         if random.random() < 0.5:
@@ -92,25 +92,21 @@ def run():
 
         coalitions_original_graph = coop_original_graph.get_player_coalition_values(source_a_set, source_b_set)
 
-
-
-
         rr = RegularReduce(graph=graph, mcst_edges=mcst_edges)
         reduced_graph = rr.reduce_graph()
         
-        fix = FixOverReduce(reduced_graph=reduced_graph, mcst_edges=mcst_edges, original_coalitions=coalitions_original_graph, source_a_set=source_a_set, source_b_set=source_b_set)
-        if fix.is_over_reduced():
+        fix = FixOverReduce(reduced_graph=reduced_graph, mcst_edges=mcst_edges, original_graph=graph, original_coalitions=coalitions_original_graph, source_a_set=source_a_set, source_b_set=source_b_set)
+        if fix.is_over_reduced(reduced_graph):
             overreduced += 1
 
             coop_reduced_graph = CoopMethods(graph=reduced_graph)
             coalitions_reduced_graph = coop_reduced_graph.get_player_coalition_values(source_a_set=source_a_set, source_b_set=source_b_set)
         
             fixed_graph = fix.fix_over_reduce()
-            fixed = FixOverReduce(reduced_graph=fixed_graph, mcst_edges=mcst_edges, original_coalitions=coalitions_original_graph, source_a_set=source_a_set, source_b_set=source_b_set)
             coop_fixed_graph = CoopMethods(graph=fixed_graph)
             coalitions_fixed_graph = coop_fixed_graph.get_player_coalition_values(source_a_set=source_a_set, source_b_set=source_b_set)
             
-            if not fixed.is_over_reduced():
+            if not fix.is_over_reduced(fixed_graph):
                 fixed_overreduced += 1
                 sv = ShapleyValue(coalitions_fixed_graph, len(graph.get_players()))
                 shapley_value = sv.get_shapley_value()
@@ -128,16 +124,16 @@ Source A: {source_a_set} Source B: {source_b_set}
 Coalitions: {coalitions_original_graph}
 Coalitions (Reduced): {coalitions_reduced_graph}
 Coalitions (Fixed): {coalitions_fixed_graph}
-Allocation: {shapley_value}\n\n
+Allocation {shapley_value} not in core...
 Reduced Graph:
 {reduced_graph.to_string()}
-Allocation not in core of game...
-Sum of cost allocation and grand coalition cost: {sum(shapley_value)} != {list(coalitions_original_graph.values())[-1]}\n\n"""
-                        with open('contradictions_shapley_value_one_sources.txt', 'a') as file:
+Fixed Graph:
+{fixed_graph.to_string()}\n\n"""
+                        with open('not_fixed.txt', 'a') as file:
                             file.write(data)
 
         limiter += 1
-        percent_complete = round((limiter/limit)*100)
+        percent_complete = round((limiter/limit)*100, 2)
         if not percent_complete == current_percentage:
             current_percentage = percent_complete
             print(f'{current_percentage}% complete...')
