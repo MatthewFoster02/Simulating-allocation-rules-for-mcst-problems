@@ -1,4 +1,5 @@
 import random
+import time
 
 from graph.graph import Graph
 from graph.node import Node
@@ -60,13 +61,17 @@ def will_optimal_solution_have_2_components(mcst:MCST, graph:Graph, source_a_set
 
 def run():
     limiter = 0
-    limit = 1000000
+    limit = 100
 
     path_contradiction_counter = 0
     prim_contradiction_counter = 0
     kruskal_contradiction_counter = 0
     two_component_optimal_counter = 0
     path_rule_couldnt_compute = 0
+
+    kruskal_time = 0
+    prim_time = 0
+    path_time = 0
 
     current_percentage = 0
     while limiter < limit:
@@ -92,7 +97,10 @@ def run():
         # Get allocation using path rule
         
         pathRule = PathRule(graph=graph, mcst_edges=mcst_edges, source_a_set=source_a_set, source_b_set=source_b_set)
+        path_start = time.time()
         solution = pathRule.run_rule()
+        path_end = time.time()
+        path_time += (path_end - path_start) * 1000
         path_allocation_worked = False
         if not solution:
             path_rule_couldnt_compute += 1
@@ -102,14 +110,20 @@ def run():
                 
         
         # Get allocation using kruskal and prim.
+        prim_start = time.time()
         mcst_instance.kruskal()
         mcst_instance.prim()
+        prim_end = time.time()
+        prim_time += (prim_end - prim_start) * 1000
         prim_allocation = mcst_instance.getCostAllocation()
 
         # Original
         mcst_instance.resetCostAllocation()
         mcst_instance.kruskal()
+        kruskal_start = time.time()
         mcst_instance.kruskal(share_edge_costs=True)
+        kruskal_end = time.time()
+        kruskal_time += (kruskal_end - kruskal_start) * 1000
         kruskal_allocation = mcst_instance.getCostAllocation()
 
         # Check path allocation
@@ -167,4 +181,8 @@ Sum of cost allocation and grand coalition cost: {sum(kruskal_allocation)} != {l
     print(f'\nOverall: {kruskal_contradiction_counter}/{limit} CONTRADICTIONS when using Kruskal')
     print(f'\nOverall: {prim_contradiction_counter}/{limit} CONTRADICTIONS when using Prim')
     print(f'\nOverall: {path_contradiction_counter}/{limit} CONTRADICTIONS when using Path')
-    print(f'{two_component_optimal_counter} times a randomly generated graph had 2 components in the optimal solution. {limiter+two_component_optimal_counter}')
+    print(f'{two_component_optimal_counter} times a randomly generated graph had 1 components in the optimal solution. {limiter+two_component_optimal_counter}')
+    print()
+    print(f'Kruskal time: {kruskal_time}')
+    print(f'Prim time: {prim_time}')
+    print(f'Path time: {path_time}')

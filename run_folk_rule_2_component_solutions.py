@@ -1,4 +1,5 @@
 import random
+import time
 
 from graph.node import Node
 from graph.graph import Graph
@@ -46,7 +47,7 @@ def join_sub_allocations(allocation_a:list[float], allocation_b:list[float], sou
 
 
 def run():
-    limit = 1000000
+    limit = 100
     limiter = 0
 
     graph_a_contradiction_counter = 0
@@ -54,6 +55,8 @@ def run():
     contradiction_counter = 0
 
     contradiction_counter_not_4 = 0
+
+    two_components_time = 0
 
     current_percentage = 0
     while limiter < limit:
@@ -69,6 +72,7 @@ def run():
             #print('Solution has one component, skipping...')
             continue
 
+        two_components_start = time.time()
         graph_a = get_subgraph(graph, source_a_set, 'a')
         graph_b = get_subgraph(graph, source_b_set, 'b')
 
@@ -98,6 +102,8 @@ def run():
         #     print(f'Subgraph b folk allocation not in core... {sum(allocation_b)} and {list(graph_b_coalitions.values())[-1]}')
         
         full_graph_allocation = join_sub_allocations(allocation_a, allocation_b, source_a_set, source_b_set)
+        two_components_end = time.time()
+        two_components_time += (two_components_end - two_components_start) * 1000
 
         if not coop_full_graph.belongs_to_core(full_graph_coalitions, full_graph_allocation):
             if len(graph_a_coalitions) == 1 and '4' in list(graph_a_coalitions.keys()):
@@ -133,3 +139,5 @@ Graph B:
     print(f'\n{contradiction_counter_not_4}/{limit} CONTRADICTIONS')
     print(f'\n{graph_a_contradiction_counter}/{limit} SUBGRAPH A CONTRADICTIONS')
     print(f'\n{graph_b_contradiction_counter}/{limit} SUBGRAPH B CONTRADICTIONS')
+    print()
+    print(f'Two components time: {two_components_time}')

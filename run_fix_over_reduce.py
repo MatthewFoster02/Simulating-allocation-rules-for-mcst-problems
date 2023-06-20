@@ -1,4 +1,5 @@
 import random
+import time
 
 from graph.graph import Graph
 from graph.node import Node
@@ -63,13 +64,15 @@ def will_optimal_solution_have_2_components(mcst:MCST, graph:Graph, source_a_set
 
 def run():
     limiter = 0
-    limit = 1000000
+    limit = 100
 
     contradiction_counter = 0
     two_component_optimal_counter = 0
     overreduced = 0
     fixed_overreduced = 0
     contra_4s = 0
+
+    sv_one_time = 0
 
     current_percentage = 0.0
     while limiter < limit:
@@ -92,6 +95,7 @@ def run():
 
         coalitions_original_graph = coop_original_graph.get_player_coalition_values(source_a_set, source_b_set)
 
+        sv_one_start = time.time()
         rr = RegularReduce(graph=graph, mcst_edges=mcst_edges)
         reduced_graph = rr.reduce_graph()
         
@@ -110,6 +114,8 @@ def run():
                 fixed_overreduced += 1
                 sv = ShapleyValue(coalitions_fixed_graph, len(graph.get_players()))
                 shapley_value = sv.get_shapley_value()
+                sv_one_end = time.time()
+                sv_one_time += (sv_one_end - sv_one_start) * 1000
 
                 if not coop_original_graph.belongs_to_core(coalitions_original_graph, shapley_value):
                     if len(graph.get_players()) == 4 and coalitions_original_graph['4'] == shapley_value[3]:
@@ -145,4 +151,5 @@ Fixed Graph:
     # print(f'\nOverreduced amount: {overreduced}/{limit}')
     # print(f'\nOverreduced fixed amount: {fixed_overreduced}/{limit}')
     print(f'{two_component_optimal_counter} times a randomly generated graph had 2 components in the optimal solution. {limiter+two_component_optimal_counter}')
-
+    print()
+    print(f'Shapley value one source: {sv_one_time}')

@@ -1,4 +1,5 @@
 import random
+import time
 
 from graph.graph import Graph
 from graph.node import Node
@@ -67,11 +68,13 @@ def will_optimal_solution_have_2_components(mcst:MCST, graph:Graph, source_a_set
 
 def run():
     limiter = 0
-    limit = 1000000
+    limit = 100
 
     contradiction_counter = 0
     contra_4s = 0
     two_component_optimal_counter = 0
+
+    sv_both_time = 0
 
     current_percentage = 0
     while limiter < limit:
@@ -90,10 +93,12 @@ def run():
             #print(f'\nGraph has optimal solution with 2 components, skipping...\n')
             continue
 
+        
         coop_original_graph = CoopMethods(graph=graph)
 
         coalitions_original_graph = coop_original_graph.get_player_coalition_values(source_a_set, source_b_set)
 
+        sv_both_start = time.time()
         rr = RegularReduce(graph=graph, mcst_edges=mcst_edges)
         reduced_graph = rr.reduce_graph()
 
@@ -102,6 +107,8 @@ def run():
 
         sv = ShapleyValue(coalitions_reduced_graph, len(graph.get_players()))
         shapley_value = sv.get_shapley_value()
+        sv_both_end = time.time()
+        sv_both_time += (sv_both_end - sv_both_start) * 1000
 
         if not coop_original_graph.belongs_to_core(coalitions_original_graph, shapley_value):
             if len(graph.get_players()) == 4 and coalitions_original_graph['4'] == shapley_value[3]:
@@ -133,4 +140,5 @@ Sum of cost allocation and grand coalition cost: {sum(shapley_value)} != {list(c
     print(f'\nOverall: {contradiction_counter}/{limit} CONTRADICTIONS')
     print(f'\n4 issue: {contra_4s}/{limit} CONTRADICTIONS')
     print(f'{two_component_optimal_counter} times a randomly generated graph had 2 components in the optimal solution. {limiter+two_component_optimal_counter}')
-
+    print()
+    print(f'Shapley value both time: {sv_both_time}')
